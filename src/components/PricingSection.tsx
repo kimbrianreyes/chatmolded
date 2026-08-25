@@ -1,125 +1,115 @@
 "use client";
 
 import React from "react";
-import { Check, Sparkles, Zap, Shield, ArrowRight } from "lucide-react";
+import { CheckCircle, Sparkle, ArrowRight } from "@phosphor-icons/react";
 
 export default function PricingSection() {
   return (
-    <section id="pricing" className="relative py-20 px-4 sm:px-6 lg:px-8 bg-[#05070c]">
+    <section id="pricing" className="relative py-20 px-4 sm:px-6 lg:px-8 bg-[#05070c] border-t border-white/[0.07]">
       <div className="mx-auto max-w-7xl">
-        <div className="text-center max-w-3xl mx-auto">
-          <div className="inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3.5 py-1 text-xs font-semibold text-cyan-300">
-            <Zap className="h-3.5 w-3.5" />
-            <span>Honest &amp; Transparent Plans</span>
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 border-b border-white/[0.08] pb-6">
+          <div>
+            <h2 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
+              Transparent $0 BYOK Pricing
+            </h2>
+            <p className="mt-2 text-xs sm:text-sm text-slate-400 max-w-xl">
+              No credit card required. Mold your bot on your documents and embed on your site at $0 platform fee.
+            </p>
           </div>
-          <h2 className="mt-4 text-3xl font-extrabold tracking-tight sm:text-4xl text-white">
-            Start 100% Free with Your Own API Key
-          </h2>
-          <p className="mt-3 text-slate-300 text-sm sm:text-base">
-            No credit card required. Mold your bot, feed your documents, and embed on your site at $0 platform cost.
-          </p>
+          <span className="font-mono text-xs text-emerald-400 font-semibold">
+            Phase 1 Live &bull; Free Forever
+          </span>
         </div>
 
-        {/* Pricing Cards Grid */}
-        <div className="mt-12 grid grid-cols-1 gap-8 lg:grid-cols-2 max-w-5xl mx-auto items-stretch">
-          {/* Free BYOK Tier */}
-          <div className="rounded-2xl border-2 border-indigo-500/40 bg-gradient-to-b from-[#0e1424] to-[#090d18] p-8 shadow-2xl relative flex flex-col justify-between">
-            <div className="absolute -top-3.5 left-8 rounded-full bg-gradient-to-r from-indigo-500 to-cyan-500 px-3.5 py-1 text-[11px] font-bold text-white shadow-md">
-              CURRENT PHASE &bull; 100% FREE
-            </div>
-
+        {/* Pricing Cards */}
+        <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2 max-w-4xl">
+          {/* BYOK Tier */}
+          <div className="rounded-xl border border-emerald-500/40 bg-[#0a1215] p-7 flex flex-col justify-between shadow-xl">
             <div>
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between border-b border-white/[0.08] pb-4">
                 <div>
-                  <h3 className="text-xl font-bold text-white">BYOK Free Tier</h3>
-                  <p className="text-xs text-slate-400 mt-1">
-                    Perfect for developers, portfolios &amp; indie founders
+                  <h3 className="text-base font-bold text-white">BYOK Free Tier</h3>
+                  <p className="text-xs text-slate-400 mt-0.5">
+                    For developers, portfolios &amp; indie founders
                   </p>
                 </div>
                 <div className="text-right">
-                  <span className="text-3xl font-black text-white">$0</span>
-                  <span className="text-xs text-slate-400"> / forever</span>
+                  <span className="text-3xl font-black text-white font-mono">$0</span>
+                  <span className="text-xs text-slate-400 font-mono"> / forever</span>
                 </div>
               </div>
 
-              <div className="mt-6 space-y-3.5 text-xs text-slate-200">
+              <div className="mt-5 space-y-3 text-xs text-slate-200">
                 {[
                   "1 Active Custom Chatbot",
-                  "Bring Your Own API Key (OpenAI, Groq, Anthropic)",
-                  "Unlimited User Interactions (No monthly chat caps)",
-                  "Text, Markdown, PDF & DOCX document ingestion",
-                  "Safe Upload Rate-Limiting Protection",
-                  "Customizable Floating Bubble Widget (Colors, Avatar, Greeting)",
+                  "Bring Your Own Key (Groq, OpenAI, Anthropic)",
+                  "Unlimited User Conversations (No message caps)",
+                  "PDF, DOCX & Plain Text Document Ingestion",
+                  "Upload Rate Limiting Security",
+                  "Customizable Floating Bubble & Themes",
                   "Sandboxed Iframe with Domain Whitelisting",
-                  "Standard Community Support",
-                ].map((feat, idx) => (
+                ].map((item, idx) => (
                   <div key={idx} className="flex items-center gap-2.5">
-                    <div className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-indigo-500/20 text-indigo-400">
-                      <Check className="h-3 w-3" />
-                    </div>
-                    <span>{feat}</span>
+                    <CheckCircle weight="fill" className="h-4 w-4 shrink-0 text-emerald-400" />
+                    <span>{item}</span>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div className="mt-8 pt-6 border-t border-slate-800">
+            <div className="mt-7 pt-4 border-t border-white/[0.08]">
               <a
-                href="#demo-builder"
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-indigo-500 to-cyan-500 px-4 py-3 text-xs font-bold text-white shadow-md shadow-indigo-500/25 transition-all hover:shadow-indigo-500/40 hover:scale-[1.01]"
+                href="#studio"
+                className="flex w-full items-center justify-center gap-2 rounded-lg bg-emerald-500 py-3 text-xs font-bold text-slate-950 transition-all hover:bg-emerald-400"
               >
                 <span>Mold Your First Bot Free</span>
-                <ArrowRight className="h-4 w-4" />
+                <ArrowRight weight="bold" className="h-3.5 w-3.5" />
               </a>
             </div>
           </div>
 
-          {/* Pro / Managed Tier (Coming Soon) */}
-          <div className="rounded-2xl border border-slate-800 bg-[#090d16]/70 p-8 flex flex-col justify-between opacity-80 hover:opacity-100 transition-opacity">
+          {/* Pro Tier (Coming in Phase 2) */}
+          <div className="rounded-xl border border-white/[0.08] bg-[#0c101a] p-7 flex flex-col justify-between opacity-75 hover:opacity-100 transition-opacity">
             <div>
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between border-b border-white/[0.06] pb-4">
                 <div>
                   <div className="flex items-center gap-2">
-                    <h3 className="text-xl font-bold text-slate-300">Managed Pro</h3>
-                    <span className="rounded-full bg-slate-800 px-2 py-0.5 text-[10px] font-semibold text-slate-400">
+                    <h3 className="text-base font-bold text-slate-300">Managed Pro</h3>
+                    <span className="rounded bg-white/5 px-1.5 py-0.5 font-mono text-[10px] text-slate-400">
                       Phase 2
                     </span>
                   </div>
-                  <p className="text-xs text-slate-400 mt-1">
+                  <p className="text-xs text-slate-400 mt-0.5">
                     For growing businesses needing hosted model pools
                   </p>
                 </div>
                 <div className="text-right">
-                  <span className="text-3xl font-black text-slate-300">$19</span>
-                  <span className="text-xs text-slate-400"> / mo</span>
+                  <span className="text-3xl font-black text-slate-300 font-mono">$19</span>
+                  <span className="text-xs text-slate-400 font-mono"> / mo</span>
                 </div>
               </div>
 
-              <div className="mt-6 space-y-3.5 text-xs text-slate-400">
+              <div className="mt-5 space-y-3 text-xs text-slate-400">
                 {[
                   "Unlimited Custom Chatbots",
-                  "Platform Managed LLM Pool (No API keys needed)",
-                  "Automatic Website URL Scraping & Syncing",
-                  "Advanced Chat Analytics & Lead Capture CRM",
-                  "Remove Powered by ChatMolded Badge",
-                  "Multi-member Team Collaboration",
-                  "Priority Document Processing & Vector Scaling",
-                  "Dedicated Support & Custom Domain Integrations",
-                ].map((feat, idx) => (
+                  "Platform-Managed LLM Pool (No API keys needed)",
+                  "Automatic Website URL Crawling & Syncing",
+                  "Analytics & Lead Capture Inbox",
+                  "Remove Powered-By Badge",
+                  "Team Member Access",
+                ].map((item, idx) => (
                   <div key={idx} className="flex items-center gap-2.5">
-                    <div className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-slate-800 text-slate-500">
-                      <Check className="h-3 w-3" />
-                    </div>
-                    <span>{feat}</span>
+                    <CheckCircle weight="fill" className="h-4 w-4 shrink-0 text-slate-600" />
+                    <span>{item}</span>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div className="mt-8 pt-6 border-t border-slate-800/80">
+            <div className="mt-7 pt-4 border-t border-white/[0.06]">
               <button
                 disabled
-                className="w-full rounded-xl border border-slate-800 bg-slate-900/60 px-4 py-3 text-xs font-semibold text-slate-500 cursor-not-allowed text-center"
+                className="w-full rounded-lg border border-white/10 bg-white/[0.02] py-3 text-xs font-semibold text-slate-500 cursor-not-allowed font-mono"
               >
                 Available in Phase 2
               </button>

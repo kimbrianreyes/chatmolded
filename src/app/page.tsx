@@ -4,20 +4,19 @@ import React, { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import AudienceSplit from "@/components/AudienceSplit";
+import DocumentEnginePreview from "@/components/DocumentEnginePreview";
 import DemoBotBuilder from "@/components/DemoBotBuilder";
-import HowItWorks from "@/components/HowItWorks";
 import BYOKExplainer from "@/components/BYOKExplainer";
 import EmbedCodeShowcase from "@/components/EmbedCodeShowcase";
 import PricingSection from "@/components/PricingSection";
 import FAQSection from "@/components/FAQSection";
-import CTASection from "@/components/CTASection";
 import Footer from "@/components/Footer";
 import FloatingChatbotWidget, { BotTheme, PERSONAS } from "@/components/FloatingChatbotWidget";
 
 export default function Home() {
   const [isWidgetOpen, setIsWidgetOpen] = useState(false);
   const [activePersonaKey, setActivePersonaKey] = useState("portfolio");
-  const [theme, setTheme] = useState<BotTheme>("indigo");
+  const [theme, setTheme] = useState<BotTheme>("emerald");
 
   const handleOpenWidget = () => {
     setIsWidgetOpen(true);
@@ -29,7 +28,6 @@ export default function Home() {
     knowledge: string;
     theme: BotTheme;
   }) => {
-    // Dynamically inject custom persona into widget memory
     PERSONAS["custom_sandbox"] = {
       id: "custom_sandbox",
       name: customBot.name,
@@ -43,7 +41,7 @@ export default function Home() {
       ],
       knowledgeContext: customBot.knowledge,
       responses: {
-        default: `Based on the molded knowledge:\n\n${customBot.knowledge.slice(0, 240)}...\n\n(Tested live in BYOK Sandbox mode)`,
+        default: `Based on the custom knowledge provided:\n\n${customBot.knowledge.slice(0, 200)}...\n\n(Tested in BYOK Sandbox mode)`,
       },
     };
 
@@ -53,11 +51,10 @@ export default function Home() {
   };
 
   return (
-    <div className="relative min-h-screen bg-[#05070c] text-slate-100 flex flex-col">
-      {/* Navigation */}
+    <div className="min-h-screen bg-[#06080d] text-slate-100 flex flex-col font-sans selection:bg-emerald-500 selection:text-slate-950">
+      {/* Linear-style navigation */}
       <Navbar onOpenDemo={handleOpenWidget} />
 
-      {/* Main Landing Sections */}
       <main className="flex-1">
         {/* Hero Section */}
         <Hero
@@ -66,35 +63,32 @@ export default function Home() {
           setSelectedTheme={setTheme}
         />
 
-        {/* Audience Focus: Developers vs Small Businesses */}
+        {/* Capabilities Section */}
         <AudienceSplit />
+
+        {/* Vector Ingestion Pipeline & Chunks Inspector */}
+        <DocumentEnginePreview />
 
         {/* Interactive Bot Studio Sandbox */}
         <DemoBotBuilder onTestInWidget={handleTestCustomBotInWidget} />
 
-        {/* How It Works (3 Steps) */}
-        <HowItWorks />
-
-        {/* BYOK $0 Zero-Cost Explainer */}
+        {/* BYOK $0 Zero-Cost Architecture Explainer */}
         <BYOKExplainer />
 
         {/* 1-Line Embed Code Integration */}
         <EmbedCodeShowcase />
 
-        {/* Pricing (BYOK Free Forever vs Phase 2 Pro) */}
+        {/* Transparent Pricing ($0 BYOK) */}
         <PricingSection />
 
         {/* FAQs */}
         <FAQSection />
-
-        {/* CTA Section */}
-        <CTASection onOpenWidget={handleOpenWidget} />
       </main>
 
       {/* Footer */}
       <Footer />
 
-      {/* Floating Bottom-Right Chatbot Widget (Always Interactive) */}
+      {/* Floating Chatbot Widget (Always Interactive) */}
       <FloatingChatbotWidget
         isOpen={isWidgetOpen}
         setIsOpen={setIsWidgetOpen}
