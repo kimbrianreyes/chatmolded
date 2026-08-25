@@ -8,11 +8,12 @@ export default function EmbedCodeShowcase() {
   const [copied, setCopied] = useState(false);
 
   const snippets = {
-    html: `<!-- ChatMolded Floating Bubble -->
+    html: `<!-- ChatMolded Floating Bubble with Custom Logo & Theme -->
 <script 
   src="https://chatmolded.app/widget.js" 
   data-bot-id="cm_live_portfolio_bot" 
   data-theme="emerald"
+  data-avatar-url="https://yourportfolio.dev/avatar.png"
   data-position="bottom-right"
   defer>
 </script>`,
@@ -28,6 +29,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           src="https://chatmolded.app/widget.js"
           data-bot-id="cm_live_portfolio_bot"
           data-theme="emerald"
+          data-avatar-url="https://yourportfolio.dev/avatar.png"
           strategy="lazyOnload"
         />
       </body>
@@ -42,6 +44,8 @@ export default function App() {
     const s = document.createElement("script");
     s.src = "https://chatmolded.app/widget.js";
     s.setAttribute("data-bot-id", "cm_live_portfolio_bot");
+    s.setAttribute("data-theme", "emerald");
+    s.setAttribute("data-avatar-url", "https://yourportfolio.dev/avatar.png");
     s.defer = true;
     document.body.appendChild(s);
   }, []);
@@ -57,6 +61,8 @@ export default function App() {
     <script 
       src="https://chatmolded.app/widget.js" 
       data-bot-id="cm_live_portfolio_bot" 
+      data-theme="emerald"
+      data-avatar-url="https://yourportfolio.dev/avatar.png"
       defer>
     </script>
   </head>
@@ -78,10 +84,10 @@ export default function App() {
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 border-b border-white/[0.08] pb-6">
           <div>
             <h2 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
-              1-Line Embed on Any Framework
+              1-Line Embed with Custom Brand Logo
             </h2>
             <p className="mt-2 text-xs sm:text-sm text-slate-400 max-w-xl">
-              Drop one script tag onto HTML, Next.js, React, or Astro. The widget runs inside an isolated sandbox with zero CSS collisions.
+              Pass your custom avatar or company logo URL directly in the script tag, alongside your theme and position preferences.
             </p>
           </div>
 

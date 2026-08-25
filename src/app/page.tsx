@@ -17,6 +17,7 @@ export default function Home() {
   const [isWidgetOpen, setIsWidgetOpen] = useState(false);
   const [activePersonaKey, setActivePersonaKey] = useState("portfolio");
   const [theme, setTheme] = useState<BotTheme>("emerald");
+  const [customAvatar, setCustomAvatar] = useState<string | null>(null);
 
   const handleOpenWidget = () => {
     setIsWidgetOpen(true);
@@ -27,12 +28,16 @@ export default function Home() {
     welcome: string;
     knowledge: string;
     theme: BotTheme;
+    avatarImage?: string | null;
   }) => {
+    setCustomAvatar(customBot.avatarImage || null);
+
     PERSONAS["custom_sandbox"] = {
       id: "custom_sandbox",
       name: customBot.name,
       subtitle: `Molded Knowledge (${customBot.knowledge.length} chars)`,
       avatarIcon: "✨",
+      avatarImage: customBot.avatarImage || undefined,
       welcomeMsg: customBot.welcome,
       sampleQuestions: [
         `What can ${customBot.name} help me with?`,
@@ -69,7 +74,7 @@ export default function Home() {
         {/* Vector Ingestion Pipeline & Chunks Inspector */}
         <DocumentEnginePreview />
 
-        {/* Interactive Bot Studio Sandbox */}
+        {/* Interactive Bot Studio Sandbox with Logo Upload */}
         <DemoBotBuilder onTestInWidget={handleTestCustomBotInWidget} />
 
         {/* BYOK $0 Zero-Cost Architecture Explainer */}
@@ -88,7 +93,7 @@ export default function Home() {
       {/* Footer */}
       <Footer />
 
-      {/* Floating Chatbot Widget (Always Interactive) */}
+      {/* Floating Chatbot Widget with Custom Avatar Logo */}
       <FloatingChatbotWidget
         isOpen={isWidgetOpen}
         setIsOpen={setIsWidgetOpen}
@@ -96,6 +101,7 @@ export default function Home() {
         setActivePersonaKey={setActivePersonaKey}
         theme={theme}
         setTheme={setTheme}
+        customAvatarImage={customAvatar}
       />
     </div>
   );

@@ -1,11 +1,17 @@
 "use client";
 
-import React, { useState } from "react";
-import { Sparkle, Sliders, Check, Play, FileText, Cpu, Lock, ArrowRight, Database } from "@phosphor-icons/react";
+import React, { useState, useRef } from "react";
+import { Sparkle, Sliders, Check, Play, FileText, Cpu, Lock, ArrowRight, Database, UploadSimple, Image as ImageIcon, Trash } from "@phosphor-icons/react";
 import { BotTheme } from "./FloatingChatbotWidget";
 
 interface DemoBotBuilderProps {
-  onTestInWidget: (customBot: { name: string; welcome: string; knowledge: string; theme: BotTheme }) => void;
+  onTestInWidget: (customBot: {
+    name: string;
+    welcome: string;
+    knowledge: string;
+    theme: BotTheme;
+    avatarImage?: string | null;
+  }) => void;
 }
 
 const PRESET_TEMPLATES = [
@@ -14,6 +20,7 @@ const PRESET_TEMPLATES = [
     label: "Developer Portfolio",
     name: "Alex Dev Bot",
     welcome: "Hi! Ask me anything about my software engineering experience, tech stack, or projects!",
+    avatarPreset: "👨‍💻",
     knowledge: `Name: Alex Chen
 Role: Full-Stack & AI Engineer
 Skills: TypeScript, Next.js, Node.js, Python, PostgreSQL, LangChain, TailwindCSS
@@ -28,6 +35,7 @@ Availability: Open for Senior Developer roles (Remote)`,
     label: "SaaS Customer FAQ",
     name: "NovaCloud Support",
     welcome: "Hello! How can I help you with our pricing plans, uptime, or feature docs?",
+    avatarPreset: "⚡",
     knowledge: `Product: NovaCloud Storage
 Pricing: Free Tier ($0/mo for 5GB), Pro Tier ($15/mo for 1TB)
 Features: End-to-end encryption, automated backups, 99.9% uptime SLA
@@ -42,14 +50,31 @@ export default function DemoBotBuilder({ onTestInWidget }: DemoBotBuilderProps) 
   const [botWelcome, setBotWelcome] = useState(PRESET_TEMPLATES[0].welcome);
   const [botKnowledge, setBotKnowledge] = useState(PRESET_TEMPLATES[0].knowledge);
   const [botTheme, setBotTheme] = useState<BotTheme>("emerald");
+  const [customAvatarImage, setCustomAvatarImage] = useState<string | null>(null);
   const [selectedProvider, setSelectedProvider] = useState("groq");
   const [isSimulatingIndex, setIsSimulatingIndex] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleSelectTemplate = (tpl: typeof PRESET_TEMPLATES[0]) => {
     setSelectedTemplateId(tpl.id);
     setBotName(tpl.name);
     setBotWelcome(tpl.welcome);
     setBotKnowledge(tpl.knowledge);
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        alert("Image must be smaller than 2MB");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setCustomAvatarImage(event.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleIndexAndTest = () => {
@@ -61,6 +86,7 @@ export default function DemoBotBuilder({ onTestInWidget }: DemoBotBuilderProps) 
         welcome: botWelcome,
         knowledge: botKnowledge,
         theme: botTheme,
+        avatarImage: customAvatarImage,
       });
     }, 500);
   };
@@ -71,10 +97,10 @@ export default function DemoBotBuilder({ onTestInWidget }: DemoBotBuilderProps) 
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 border-b border-white/[0.08] pb-6">
           <div>
             <h2 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
-              Live Bot Mold Studio
+              Live Bot Mold &amp; Brand Studio
             </h2>
             <p className="mt-2 text-xs sm:text-sm text-slate-400 max-w-xl">
-              Input your custom text or select a preset, configure your model engine, and launch immediately into the floating bubble.
+              Upload your custom logo or headshot, customize colors, configure your model engine, and test live in the floating bubble.
             </p>
           </div>
 
@@ -99,10 +125,58 @@ export default function DemoBotBuilder({ onTestInWidget }: DemoBotBuilderProps) 
         <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-12">
           {/* Left: Input Form (7 cols) */}
           <div className="lg:col-span-7 space-y-4">
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <div>
+            {/* Logo Upload + Name Row */}
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-12 items-center">
+              {/* Custom Logo Upload Slot (4 cols) */}
+              <div className="sm:col-span-4">
+                <label className="block text-xs font-medium text-slate-300 mb-1.5">
+                  Bot Logo / Avatar
+                </label>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleImageUpload}
+                  accept="image/png, image/jpeg, image/svg+xml, image/webp"
+                  className="hidden"
+                />
+
+                {customAvatarImage ? (
+                  <div className="flex items-center gap-2 rounded-lg border border-emerald-500/40 bg-emerald-500/10 p-2">
+                    <div className="h-9 w-9 rounded-lg overflow-hidden border border-white/20 bg-black/40">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={customAvatarImage}
+                        alt="Custom Bot Logo"
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <span className="text-[11px] font-mono text-emerald-300 block truncate">
+                        Custom Logo Active
+                      </span>
+                      <button
+                        onClick={() => setCustomAvatarImage(null)}
+                        className="flex items-center gap-1 text-[10px] text-rose-400 hover:text-rose-300 transition-colors"
+                      >
+                        <Trash className="h-3 w-3" /> Remove
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => fileInputRef.current?.click()}
+                    className="flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-white/20 bg-white/[0.02] p-2 text-xs text-slate-300 hover:border-emerald-500/50 hover:bg-white/[0.04] transition-all"
+                  >
+                    <UploadSimple weight="bold" className="h-4 w-4 text-emerald-400" />
+                    <span>Upload Logo (PNG/SVG)</span>
+                  </button>
+                )}
+              </div>
+
+              {/* Bot Name (8 cols) */}
+              <div className="sm:col-span-8">
                 <label className="block text-xs font-medium text-slate-300">
-                  Bot Name
+                  Bot Display Name
                 </label>
                 <input
                   type="text"
@@ -111,32 +185,33 @@ export default function DemoBotBuilder({ onTestInWidget }: DemoBotBuilderProps) 
                   className="mt-1.5 w-full rounded-lg border border-white/10 bg-[#090d16] px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
                 />
               </div>
+            </div>
 
-              <div>
-                <label className="block text-xs font-medium text-slate-300">
-                  Accent Theme
-                </label>
-                <div className="mt-1.5 flex items-center gap-2 rounded-lg border border-white/10 bg-[#090d16] p-1.5">
-                  {(["emerald", "cyan", "indigo", "purple"] as BotTheme[]).map((t) => (
-                    <button
-                      key={t}
-                      onClick={() => setBotTheme(t)}
-                      className={`flex-1 rounded py-1 text-[11px] font-semibold capitalize transition-all ${
-                        botTheme === t
-                          ? "bg-white/10 text-white font-bold"
-                          : "text-slate-400 hover:text-slate-200"
-                      }`}
-                    >
-                      {t}
-                    </button>
-                  ))}
-                </div>
+            {/* Accent Theme Picker */}
+            <div>
+              <label className="block text-xs font-medium text-slate-300">
+                Floating Bubble Theme &amp; Accent Color
+              </label>
+              <div className="mt-1.5 flex items-center gap-2 rounded-lg border border-white/10 bg-[#090d16] p-1.5">
+                {(["emerald", "cyan", "indigo", "purple"] as BotTheme[]).map((t) => (
+                  <button
+                    key={t}
+                    onClick={() => setBotTheme(t)}
+                    className={`flex-1 rounded py-1.5 text-xs font-semibold capitalize transition-all ${
+                      botTheme === t
+                        ? "bg-white/10 text-white font-bold ring-1 ring-white/20"
+                        : "text-slate-400 hover:text-slate-200"
+                    }`}
+                  >
+                    {t}
+                  </button>
+                ))}
               </div>
             </div>
 
             <div>
               <label className="block text-xs font-medium text-slate-300">
-                Welcome Greeting
+                Welcome Greeting Message
               </label>
               <input
                 type="text"
@@ -156,7 +231,7 @@ export default function DemoBotBuilder({ onTestInWidget }: DemoBotBuilderProps) 
                 </span>
               </div>
               <textarea
-                rows={6}
+                rows={5}
                 value={botKnowledge}
                 onChange={(e) => setBotKnowledge(e.target.value)}
                 className="mt-1.5 w-full rounded-lg border border-white/10 bg-[#090d16] p-3.5 font-mono text-xs text-slate-200 focus:border-emerald-500 focus:outline-none"
@@ -200,6 +275,20 @@ export default function DemoBotBuilder({ onTestInWidget }: DemoBotBuilderProps) 
                     )}
                   </button>
                 ))}
+              </div>
+
+              {/* Real-time Branding Preview Status */}
+              <div className="mt-4 rounded-lg bg-[#06080e] p-3 border border-white/[0.06] font-mono text-[11px] space-y-1">
+                <div className="flex items-center justify-between text-slate-400">
+                  <span>Custom Avatar:</span>
+                  <span className={customAvatarImage ? "text-emerald-400 font-bold" : "text-slate-500"}>
+                    {customAvatarImage ? "Uploaded Image Ready" : "Default Monogram"}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-slate-400">
+                  <span>Color Theme:</span>
+                  <span className="capitalize text-white font-bold">{botTheme}</span>
+                </div>
               </div>
             </div>
 

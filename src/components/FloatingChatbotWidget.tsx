@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { ChatCircleDots, X, PaperPlaneTilt, ArrowsClockwise, ShieldCheck, User, Sparkle } from "@phosphor-icons/react";
+import { ChatCircleDots, X, PaperPlaneTilt, ArrowsClockwise, ShieldCheck, User, Sparkle, Image as ImageIcon } from "@phosphor-icons/react";
 
 export type BotTheme = "emerald" | "cyan" | "indigo" | "purple";
 
@@ -11,6 +11,7 @@ export interface BotPersona {
   name: string;
   subtitle: string;
   avatarIcon: string;
+  avatarImage?: string; // Optional custom uploaded logo/photo URL or base64
   welcomeMsg: string;
   sampleQuestions: string[];
   knowledgeContext: string;
@@ -107,6 +108,7 @@ interface FloatingChatbotWidgetProps {
   setActivePersonaKey: (key: string) => void;
   theme: BotTheme;
   setTheme: (theme: BotTheme) => void;
+  customAvatarImage?: string | null;
 }
 
 export default function FloatingChatbotWidget({
@@ -116,9 +118,11 @@ export default function FloatingChatbotWidget({
   setActivePersonaKey,
   theme,
   setTheme,
+  customAvatarImage,
 }: FloatingChatbotWidgetProps) {
   const persona = PERSONAS[activePersonaKey] || PERSONAS.portfolio;
   const themeConfig = THEME_CONFIGS[theme] || THEME_CONFIGS.emerald;
+  const activeAvatar = customAvatarImage || persona.avatarImage;
 
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -228,12 +232,27 @@ export default function FloatingChatbotWidget({
             {/* Header */}
             <div className="flex items-center justify-between border-b border-white/[0.08] bg-[#070a12] px-4 py-3">
               <div className="flex items-center gap-2.5">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/5 border border-white/10 text-base">
-                  {persona.avatarIcon}
+                <div className="relative flex h-8 w-8 items-center justify-center rounded-lg bg-white/5 border border-white/10 overflow-hidden text-base">
+                  {activeAvatar ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={activeAvatar}
+                      alt={persona.name}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <span>{persona.avatarIcon}</span>
+                  )}
+                  <span className="absolute -bottom-0.5 -right-0.5 h-2 w-2 rounded-full bg-emerald-400 ring-1 ring-black" />
                 </div>
                 <div>
-                  <h4 className="text-xs font-bold text-white tracking-tight">
-                    {persona.name}
+                  <h4 className="text-xs font-bold text-white tracking-tight flex items-center gap-1.5">
+                    <span>{persona.name}</span>
+                    {activeAvatar && (
+                      <span className="rounded bg-emerald-500/10 px-1 py-0.2 text-[9px] font-mono text-emerald-400 border border-emerald-500/20">
+                        Custom Logo
+                      </span>
+                    )}
                   </h4>
                   <span className="text-[10px] text-slate-400 font-mono block">
                     {persona.subtitle}
@@ -391,13 +410,20 @@ export default function FloatingChatbotWidget({
       <button
         onClick={() => setIsOpen(!isOpen)}
         aria-label="Toggle floating widget"
-        className={`flex h-12 w-12 items-center justify-center rounded-xl border border-white/10 shadow-2xl transition-all hover:scale-105 active:scale-95 ${themeConfig.primaryBg}`}
+        className={`relative flex h-12 w-12 items-center justify-center rounded-xl border border-white/10 shadow-2xl transition-all hover:scale-105 active:scale-95 overflow-hidden ${themeConfig.primaryBg}`}
         style={{
           boxShadow: `0 8px 24px ${themeConfig.glow}`,
         }}
       >
         {isOpen ? (
           <X weight="bold" className="h-5 w-5" />
+        ) : activeAvatar ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={activeAvatar}
+            alt="Custom bot logo"
+            className="h-full w-full object-cover"
+          />
         ) : (
           <ChatCircleDots weight="bold" className="h-5 w-5" />
         )}
