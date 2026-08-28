@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { ChatCircleDots, ShieldCheck, TerminalWindow, Sparkle, List, X, ArrowUpRight } from "@phosphor-icons/react";
+import { ChatCircleDots, ShieldCheck, TerminalWindow, Sparkle, List, X, User } from "@phosphor-icons/react";
 
 export default function Navbar({ onOpenDemo }: { onOpenDemo?: () => void }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -67,15 +67,24 @@ export default function Navbar({ onOpenDemo }: { onOpenDemo?: () => void }) {
             className="flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-slate-300 transition-all hover:border-emerald-500/40 hover:bg-white/[0.06] hover:text-white"
           >
             <TerminalWindow weight="bold" className="h-3.5 w-3.5 text-emerald-400" />
-            <span>Launch Live Bubble</span>
+            <span>Test Bubble</span>
           </button>
-          <a
-            href="#studio"
+
+          <Link
+            href="/login"
+            className="flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-slate-300 hover:text-white hover:border-white/20 transition-all"
+          >
+            <User weight="bold" className="h-3.5 w-3.5 text-slate-400" />
+            <span>Dashboard</span>
+          </Link>
+
+          <Link
+            href="/signup"
             className="flex items-center gap-1.5 rounded-lg bg-emerald-500 px-3.5 py-1.5 text-xs font-semibold text-slate-950 transition-all hover:bg-emerald-400 active:scale-95"
           >
             <Sparkle weight="fill" className="h-3.5 w-3.5" />
-            <span>Mold Bot Free</span>
-          </a>
+            <span>Get Started Free</span>
+          </Link>
         </div>
 
         {/* Mobile Toggle */}
@@ -96,7 +105,7 @@ export default function Navbar({ onOpenDemo }: { onOpenDemo?: () => void }) {
             onClick={() => setMobileMenuOpen(false)}
             className="block py-1 text-sm font-medium text-slate-300"
           >
-            Capabilities (Devs &amp; Small Business)
+            Capabilities
           </a>
           <a
             href="#pipeline"
@@ -127,22 +136,20 @@ export default function Navbar({ onOpenDemo }: { onOpenDemo?: () => void }) {
             Pricing
           </a>
           <div className="pt-2 border-t border-white/10 flex flex-col gap-2">
-            <button
-              onClick={() => {
-                setMobileMenuOpen(false);
-                if (onOpenDemo) onOpenDemo();
-              }}
-              className="w-full rounded-lg border border-white/10 bg-white/5 py-2 text-xs font-semibold text-white"
+            <Link
+              href="/login"
+              onClick={() => setMobileMenuOpen(false)}
+              className="w-full rounded-lg border border-white/10 bg-white/5 py-2 text-center text-xs font-semibold text-white"
             >
-              Test Floating Widget
-            </button>
-            <a
-              href="#studio"
+              Sign In to Dashboard
+            </Link>
+            <Link
+              href="/signup"
               onClick={() => setMobileMenuOpen(false)}
               className="w-full rounded-lg bg-emerald-500 py-2 text-center text-xs font-bold text-slate-950"
             >
-              Mold Bot Free
-            </a>
+              Create Free Account
+            </Link>
           </div>
         </div>
       )}
