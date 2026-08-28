@@ -22,7 +22,13 @@ import {
   ChatCircleDots,
   Sparkle,
   Globe,
-  LockKey
+  LockKey,
+  FilePdf,
+  FileDoc,
+  FileText,
+  FileCode,
+  WarningCircle,
+  SpinnerGap
 } from "@phosphor-icons/react";
 
 interface BotStudioClientProps {
@@ -70,10 +76,14 @@ export default function BotStudioClient({
   const [newOrigin, setNewOrigin] = useState("");
   const [isActive, setIsActive] = useState(bot.is_active);
 
-  // Knowledge base text input state
+  // Knowledge base document upload states
   const [textDocTitle, setTextDocTitle] = useState("");
   const [textDocContent, setTextDocContent] = useState("");
   const [addingDoc, setAddingDoc] = useState(false);
+  const [uploadingFile, setUploadingFile] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [uploadSuccess, setUploadSuccess] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
 
   // Status & Simulator
   const [saving, setSaving] = useState(false);
@@ -88,6 +98,7 @@ export default function BotStudioClient({
   const [simTyping, setSimTyping] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const docFileInputRef = useRef<HTMLInputElement>(null);
 
   // Theme styling helpers
   const themeColors: Record<BotTheme, { bg: string; text: string; ring: string; hex: string }> = {
@@ -95,6 +106,29 @@ export default function BotStudioClient({
     cyan: { bg: "bg-cyan-500", text: "text-cyan-400", ring: "ring-cyan-500", hex: "#06b6d4" },
     indigo: { bg: "bg-indigo-500", text: "text-indigo-400", ring: "ring-indigo-500", hex: "#6366f1" },
     purple: { bg: "bg-purple-500", text: "text-purple-400", ring: "ring-purple-500", hex: "#a855f7" },
+  };
+
+  // Helper for file type icons
+  const getFileIcon = (type: string) => {
+    switch (type.toLowerCase()) {
+      case "pdf":
+        return <FilePdf weight="bold" className="h-4 w-4 text-rose-400" />;
+      case "docx":
+        return <FileDoc weight="bold" className="h-4 w-4 text-blue-400" />;
+      case "md":
+        return <FileCode weight="bold" className="h-4 w-4 text-emerald-400" />;
+      default:
+        return <FileText weight="bold" className="h-4 w-4 text-slate-300" />;
+    }
+  };
+
+  // Format file size
+  const formatBytes = (bytes: number) => {
+    if (bytes === 0) return "0 B";
+    const k = 1024;
+    const sizes = ["B", "KB", "MB", "GB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
   };
 
   // Handle Logo Upload via FileReader
@@ -183,11 +217,47 @@ export default function BotStudioClient({
     }
   };
 
+  // Upload File Document (PDF, DOCX, TXT, MD) via Route Handler
+  const handleDocumentFileUpload = async (file: File) => {
+    setUploadingFile(true);
+    setUploadError(null);
+    setUploadSuccess(null);
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await fetch(`/api/bots/${bot.id}/documents`, {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Upload failed");
+      }
+
+      if (data.document) {
+        setDocuments([data.document, ...documents]);
+        setUploadSuccess(
+          `"${file.name}" successfully parsed & split into ${data.chunksCreated} knowledge chunks!`
+        );
+        setTimeout(() => setUploadSuccess(null), 4000);
+      }
+    } catch (err: any) {
+      setUploadError(err.message || "Failed to ingest document");
+    } finally {
+      setUploadingFile(false);
+    }
+  };
+
   // Add text document to knowledge base
   const handleAddTextDocument = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!textDocContent.trim()) return;
     setAddingDoc(true);
+    setUploadError(null);
 
     try {
       const newDoc = await addTextDocumentAction(
@@ -199,9 +269,11 @@ export default function BotStudioClient({
         setDocuments([newDoc, ...documents]);
         setTextDocTitle("");
         setTextDocContent("");
+        setUploadSuccess("Raw text successfully ingested into knowledge base!");
+        setTimeout(() => setUploadSuccess(null), 3000);
       }
     } catch (err: any) {
-      alert(err.message || "Failed to ingest text document");
+      setUploadError(err.message || "Failed to ingest text document");
     } finally {
       setAddingDoc(false);
     }
@@ -234,7 +306,7 @@ export default function BotStudioClient({
         documents.length > 0
           ? `Based on your molded knowledge (${documents.length} document[s] indexed):\n\n` +
             `I found relevant context regarding: "${message}". In full BYOK mode, this will query your ${provider.toUpperCase()} (${model}) model using vector embeddings!`
-          : `Hello! I am ${name}. You haven't added any documents to my Knowledge Base tab yet. Add your resume, FAQ, or docs so I can answer questions accurately!`;
+          : `Hello! I am ${name}. You haven't added any documents to my Knowledge Base tab yet. Upload a PDF, DOCX, or paste text so I can answer questions accurately!`;
 
       setSimMessages([...newMsgs, { role: "assistant", content: answer }]);
       setSimTyping(false);
@@ -520,14 +592,14 @@ export default function BotStudioClient({
             </div>
           )}
 
-          {/* TAB 2: KNOWLEDGE BASE */}
+          {/* TAB 2: KNOWLEDGE BASE (DOCUMENTS & TEXT) */}
           {activeTab === "knowledge" && (
             <div className="rounded-2xl border border-white/[0.08] bg-[#0a0e17] p-6 space-y-6">
               <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
                 <div>
-                  <h2 className="text-sm font-bold text-white">Knowledge Ingestion</h2>
+                  <h2 className="text-sm font-bold text-white">Document &amp; Knowledge Ingestion</h2>
                   <p className="text-xs text-slate-400">
-                    Add custom documents and text to train this chatbot.
+                    Upload documents or paste text to train this chatbot.
                   </p>
                 </div>
                 <span className="rounded bg-emerald-500/10 px-2 py-0.5 font-mono text-[10px] text-emerald-400 border border-emerald-500/20">
@@ -535,25 +607,100 @@ export default function BotStudioClient({
                 </span>
               </div>
 
-              {/* Direct Text Knowledge Input */}
+              {/* Status Alerts */}
+              {uploadSuccess && (
+                <div className="flex items-start gap-2.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-xs text-emerald-300">
+                  <CheckCircle weight="fill" className="h-4 w-4 shrink-0 text-emerald-400 mt-0.5" />
+                  <span>{uploadSuccess}</span>
+                </div>
+              )}
+
+              {uploadError && (
+                <div className="flex items-start gap-2.5 rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-300">
+                  <WarningCircle weight="fill" className="h-4 w-4 shrink-0 text-rose-400 mt-0.5" />
+                  <span>{uploadError}</span>
+                </div>
+              )}
+
+              {/* 1. Drag & Drop File Upload Area */}
+              <div
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  setIsDragging(true);
+                }}
+                onDragLeave={() => setIsDragging(false)}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  setIsDragging(false);
+                  const file = e.dataTransfer.files?.[0];
+                  if (file) handleDocumentFileUpload(file);
+                }}
+                className={`relative rounded-2xl border-2 border-dashed p-6 text-center transition-all ${
+                  isDragging
+                    ? "border-emerald-500 bg-emerald-500/[0.08]"
+                    : "border-white/15 bg-[#080c14] hover:border-white/25"
+                }`}
+              >
+                <input
+                  ref={docFileInputRef}
+                  type="file"
+                  accept=".pdf,.docx,.txt,.md"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) handleDocumentFileUpload(file);
+                  }}
+                  className="hidden"
+                />
+
+                <div className="flex flex-col items-center justify-center space-y-2">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/[0.04] text-emerald-400 border border-white/10">
+                    {uploadingFile ? (
+                      <SpinnerGap weight="bold" className="h-5 w-5 animate-spin" />
+                    ) : (
+                      <UploadSimple weight="bold" className="h-5 w-5" />
+                    )}
+                  </div>
+
+                  <div>
+                    <p className="text-xs font-semibold text-white">
+                      {uploadingFile ? "Parsing & Chunking Document..." : "Drag & drop document or"}
+                    </p>
+                    {!uploadingFile && (
+                      <button
+                        type="button"
+                        onClick={() => docFileInputRef.current?.click()}
+                        className="mt-1 text-xs font-bold text-emerald-400 hover:text-emerald-300 underline underline-offset-2"
+                      >
+                        Browse Files from Computer
+                      </button>
+                    )}
+                  </div>
+
+                  <p className="text-[10px] text-slate-500 font-mono">
+                    Supported: PDF, DOCX, TXT, Markdown (Max 5MB • Rate limited 5/min)
+                  </p>
+                </div>
+              </div>
+
+              {/* 2. Direct Text Knowledge Input */}
               <form onSubmit={handleAddTextDocument} className="space-y-3 rounded-xl border border-white/10 bg-[#080c14] p-4">
                 <span className="text-xs font-semibold text-white flex items-center gap-1.5">
                   <Sparkle weight="fill" className="h-3.5 w-3.5 text-emerald-400" />
-                  Paste Text / Markdown Knowledge
+                  Or Paste Raw Text / Markdown
                 </span>
 
                 <input
                   type="text"
-                  placeholder="Document Title (e.g. Portfolio Resume / About Me)"
+                  placeholder="Document Title (e.g. Portfolio Bio / FAQ)"
                   value={textDocTitle}
                   onChange={(e) => setTextDocTitle(e.target.value)}
                   className="w-full rounded-lg border border-white/10 bg-[#06080e] px-3 py-2 text-xs text-white placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
                 />
 
                 <textarea
-                  rows={4}
+                  rows={3}
                   required
-                  placeholder="Paste your resume details, technical background, FAQ questions and answers, or documentation..."
+                  placeholder="Paste resume details, tech stack, documentation, or FAQs..."
                   value={textDocContent}
                   onChange={(e) => setTextDocContent(e.target.value)}
                   className="w-full rounded-lg border border-white/10 bg-[#06080e] p-3 text-xs text-white placeholder-slate-500 focus:border-emerald-500 focus:outline-none font-mono text-[11px] leading-relaxed"
@@ -565,35 +712,35 @@ export default function BotStudioClient({
                   className="flex items-center gap-1.5 rounded-lg bg-emerald-500 px-3.5 py-1.5 text-xs font-bold text-slate-950 hover:bg-emerald-400 transition-all disabled:opacity-50"
                 >
                   <Plus weight="bold" className="h-3.5 w-3.5" />
-                  <span>{addingDoc ? "Ingesting..." : "Ingest Text into Knowledge Base"}</span>
+                  <span>{addingDoc ? "Ingesting..." : "Ingest Text"}</span>
                 </button>
               </form>
 
-              {/* Ingested Documents List */}
+              {/* 3. Ingested Documents List */}
               <div className="space-y-3">
                 <h3 className="text-xs font-bold uppercase tracking-wider font-mono text-slate-400">
-                  Ingested Knowledge Files
+                  Ingested Knowledge Documents ({documents.length})
                 </h3>
 
                 {documents.length === 0 ? (
                   <div className="rounded-xl border border-dashed border-white/10 p-6 text-center text-xs text-slate-500">
-                    No knowledge documents added yet. Paste text above to mold this chatbot!
+                    No documents uploaded yet. Drag &amp; drop a PDF or paste text above!
                   </div>
                 ) : (
                   <div className="space-y-2">
                     {documents.map((doc) => (
                       <div
                         key={doc.id}
-                        className="flex items-center justify-between rounded-xl border border-white/[0.08] bg-[#06080e] p-3 text-xs"
+                        className="flex items-center justify-between rounded-xl border border-white/[0.08] bg-[#06080e] p-3 text-xs hover:border-white/15 transition-all"
                       >
                         <div className="flex items-center gap-3 truncate">
-                          <span className="rounded bg-emerald-500/10 px-2 py-0.5 font-mono text-[10px] text-emerald-400 font-bold uppercase">
-                            {doc.file_type}
-                          </span>
+                          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/[0.04] border border-white/10">
+                            {getFileIcon(doc.file_type)}
+                          </div>
                           <div className="truncate">
                             <p className="font-semibold text-white truncate">{doc.file_name}</p>
                             <p className="text-[10px] text-slate-400 font-mono">
-                              {doc.file_size_bytes} bytes • {doc.chunk_count} chunk(s) indexed
+                              {formatBytes(doc.file_size_bytes)} • {doc.chunk_count} chunk(s) indexed
                             </p>
                           </div>
                         </div>
@@ -601,7 +748,8 @@ export default function BotStudioClient({
                         <button
                           type="button"
                           onClick={() => handleDeleteDocument(doc.id)}
-                          className="rounded p-1 text-slate-500 hover:text-rose-400 transition-colors"
+                          className="rounded p-1.5 text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 transition-all"
+                          title="Delete Document"
                         >
                           <Trash weight="bold" className="h-4 w-4" />
                         </button>
