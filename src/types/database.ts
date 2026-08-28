@@ -7,7 +7,7 @@ export type Json =
   | Json[];
 
 export type BotTheme = 'emerald' | 'cyan' | 'indigo' | 'purple';
-export type AIProvider = 'groq' | 'openai' | 'anthropic' | 'gemini';
+export type AIProvider = 'groq' | 'xai' | 'openai' | 'anthropic' | 'gemini' | 'deepseek' | 'openrouter' | 'custom';
 export type DocumentFileType = 'pdf' | 'docx' | 'txt' | 'md';
 export type DocumentStatus = 'processing' | 'indexed' | 'failed';
 

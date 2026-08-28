@@ -1,4 +1,5 @@
 import mammoth from "mammoth";
+import { extractText } from "unpdf";
 
 export type SupportedExtension = "pdf" | "docx" | "txt" | "md";
 
@@ -18,10 +19,14 @@ export async function extractTextFromBuffer(
     }
 
     case "pdf": {
-      const pdfParseModule: any = await import("pdf-parse");
-      const pdfParse = typeof pdfParseModule === "function" ? pdfParseModule : pdfParseModule.default || pdfParseModule;
-      const data = await pdfParse(buffer);
-      return data.text;
+      try {
+        const uint8Data = new Uint8Array(buffer);
+        const { text } = await extractText(uint8Data, { mergePages: true });
+        return text || "";
+      } catch (err: any) {
+        console.error("PDF Parsing Error with unpdf:", err);
+        throw new Error(`Failed to extract text from PDF: ${err.message || "Unknown error"}`);
+      }
     }
 
     default:

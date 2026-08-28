@@ -290,27 +290,70 @@ export default function BotStudioClient({
     }
   };
 
-  // Simulator Send Message
-  const handleSimSend = (textToSend?: string) => {
+  // Simulator Send Message with Real AI Streaming
+  const handleSimSend = async (textToSend?: string) => {
     const message = textToSend || simInput;
-    if (!message.trim()) return;
+    if (!message.trim() || simTyping) return;
 
-    const newMsgs = [...simMessages, { role: "user" as const, content: message }];
-    setSimMessages(newMsgs);
+    const updatedUserMsgs = [...simMessages, { role: "user" as const, content: message }];
+    setSimMessages(updatedUserMsgs);
     setSimInput("");
     setSimTyping(true);
 
-    setTimeout(() => {
-      // Mocked sandbox response based on ingested documents count
-      const answer =
-        documents.length > 0
-          ? `Based on your molded knowledge (${documents.length} document[s] indexed):\n\n` +
-            `I found relevant context regarding: "${message}". In full BYOK mode, this will query your ${provider.toUpperCase()} (${model}) model using vector embeddings!`
-          : `Hello! I am ${name}. You haven't added any documents to my Knowledge Base tab yet. Upload a PDF, DOCX, or paste text so I can answer questions accurately!`;
+    try {
+      const response = await fetch(`/api/bots/${bot.id}/chat`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(apiKey ? { "x-api-key": apiKey } : {}),
+        },
+        body: JSON.stringify({
+          messages: updatedUserMsgs.filter((m) => m.content.trim().length > 0),
+          apiKey: apiKey || undefined,
+          provider: provider,
+          model: model,
+        }),
+      });
 
-      setSimMessages([...newMsgs, { role: "assistant", content: answer }]);
+      if (!response.ok) {
+        const errJson = await response.json().catch(() => ({}));
+        throw new Error(errJson.error || `Error: ${response.statusText}`);
+      }
+
+      if (!response.body) {
+        throw new Error("No response stream received");
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let accumulatedAnswer = "";
+
+      // Append initial placeholder for assistant
+      setSimMessages([...updatedUserMsgs, { role: "assistant", content: "" }]);
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const textChunk = decoder.decode(value, { stream: true });
+        accumulatedAnswer += textChunk;
+
+        setSimMessages([
+          ...updatedUserMsgs,
+          { role: "assistant", content: accumulatedAnswer },
+        ]);
+      }
+    } catch (err: any) {
+      setSimMessages([
+        ...updatedUserMsgs,
+        {
+          role: "assistant",
+          content: `⚠️ Failed to generate completion: ${err.message || "Unknown error"}\n\nMake sure you have selected a valid provider and entered your API key in the "AI Engine" tab.`,
+        },
+      ]);
+    } finally {
       setSimTyping(false);
-    }, 700);
+    }
   };
 
   const getEmbedSnippet = () => {
@@ -771,20 +814,27 @@ export default function BotStudioClient({
               {/* Provider Selector Cards */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                 {[
-                  { id: "groq", name: "Groq", subtitle: "Llama 3.3 (Fastest & Free)" },
+                  { id: "groq", name: "Groq", subtitle: "Llama 3.3 (Free & Fast)" },
+                  { id: "xai", name: "xAI (Grok)", subtitle: "grok-beta (console.x.ai)" },
                   { id: "openai", name: "OpenAI", subtitle: "GPT-4o-mini" },
+                  { id: "deepseek", name: "DeepSeek", subtitle: "deepseek-chat (V3)" },
                   { id: "anthropic", name: "Anthropic", subtitle: "Claude 3.5 Haiku" },
                   { id: "gemini", name: "Gemini", subtitle: "Flash 1.5" },
+                  { id: "openrouter", name: "OpenRouter", subtitle: "100+ Models" },
+                  { id: "custom", name: "Custom / Any", subtitle: "Self-Hosted / Other" },
                 ].map((p) => (
                   <button
                     key={p.id}
                     type="button"
                     onClick={() => {
                       setProvider(p.id as AIProvider);
-                      if (p.id === "groq") setModel("llama-3.3-70b-versatile");
+                      if (p.id === "groq") setModel("llama-3.1-8b-instant");
+                      if (p.id === "xai") setModel("grok-beta");
                       if (p.id === "openai") setModel("gpt-4o-mini");
+                      if (p.id === "deepseek") setModel("deepseek-chat");
                       if (p.id === "anthropic") setModel("claude-3-5-haiku-20241022");
                       if (p.id === "gemini") setModel("gemini-1.5-flash");
+                      if (p.id === "openrouter") setModel("meta-llama/llama-3.3-70b-instruct");
                     }}
                     className={`rounded-xl border p-3 text-left transition-all ${
                       provider === p.id
@@ -798,34 +848,89 @@ export default function BotStudioClient({
                 ))}
               </div>
 
-              {/* BYOK API Key Input */}
-              <div>
-                <div className="flex items-center justify-between mb-1">
-                  <label className="font-medium text-xs text-slate-300">
-                    Your {provider.toUpperCase()} API Key (BYOK)
-                  </label>
-                  <span className="font-mono text-[10px] text-emerald-400 flex items-center gap-1">
-                    <LockKey weight="bold" className="h-3 w-3" />
-                    Encrypted on save
-                  </span>
+              {/* Model & API Key Config */}
+              <div className="space-y-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block font-medium text-xs text-slate-300 mb-1">
+                      Model Identifier
+                    </label>
+                    <input
+                      type="text"
+                      value={model}
+                      onChange={(e) => setModel(e.target.value)}
+                      placeholder={provider === "xai" ? "grok-beta" : "e.g. llama-3.1-8b-instant"}
+                      className="w-full rounded-lg border border-white/10 bg-[#06080e] px-3 py-2 text-xs font-mono text-white placeholder-slate-600 focus:border-emerald-500 focus:outline-none"
+                    />
+
+                    {/* Quick Model Selector Pills */}
+                    {provider === "groq" && (
+                      <div className="flex flex-wrap gap-1.5 mt-2">
+                        {["llama-3.1-8b-instant", "llama-3.3-70b-versatile", "mixtral-8x7b-32768"].map((m) => (
+                          <button
+                            key={m}
+                            type="button"
+                            onClick={() => setModel(m)}
+                            className={`rounded px-2 py-0.5 font-mono text-[10px] border transition-all ${
+                              model === m
+                                ? "border-emerald-500/50 bg-emerald-500/15 text-emerald-300 font-bold"
+                                : "border-white/10 bg-white/[0.02] text-slate-400 hover:text-white"
+                            }`}
+                          >
+                            {m}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="font-medium text-xs text-slate-300">
+                        {provider.toUpperCase()} API Key
+                      </label>
+                      <span className="font-mono text-[10px] text-emerald-400 flex items-center gap-1">
+                        <LockKey weight="bold" className="h-3 w-3" />
+                        Encrypted
+                      </span>
+                    </div>
+
+                    <div className="relative">
+                      <input
+                        type={showApiKey ? "text" : "password"}
+                        value={apiKey}
+                        onChange={(e) => setApiKey(e.target.value)}
+                        placeholder={
+                          provider === "xai"
+                            ? "xai-..."
+                            : provider === "groq"
+                            ? "gsk_..."
+                            : "sk-..."
+                        }
+                        className="w-full rounded-lg border border-white/10 bg-[#06080e] px-3 py-2 pr-10 text-xs font-mono text-white placeholder-slate-600 focus:border-emerald-500 focus:outline-none"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowApiKey(!showApiKey)}
+                        className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-500 hover:text-white"
+                      >
+                        {showApiKey ? <EyeSlash weight="bold" className="h-4 w-4" /> : <Eye weight="bold" className="h-4 w-4" />}
+                      </button>
+                    </div>
+                  </div>
                 </div>
 
-                <div className="relative">
-                  <input
-                    type={showApiKey ? "text" : "password"}
-                    value={apiKey}
-                    onChange={(e) => setApiKey(e.target.value)}
-                    placeholder={`gsk_... or sk-...`}
-                    className="w-full rounded-lg border border-white/10 bg-[#06080e] px-3.5 py-2.5 pr-10 text-xs font-mono text-white placeholder-slate-600 focus:border-emerald-500 focus:outline-none"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowApiKey(!showApiKey)}
-                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-500 hover:text-white"
-                  >
-                    {showApiKey ? <EyeSlash weight="bold" className="h-4 w-4" /> : <Eye weight="bold" className="h-4 w-4" />}
-                  </button>
-                </div>
+                <p className="text-[11px] text-slate-400">
+                  {provider === "xai" && (
+                    <span>🔑 Get your Grok key from <a href="https://console.x.ai" target="_blank" rel="noreferrer" className="text-emerald-400 underline">console.x.ai</a>.</span>
+                  )}
+                  {provider === "groq" && (
+                    <span>🔑 Get your free ultra-fast key from <a href="https://console.groq.com/keys" target="_blank" rel="noreferrer" className="text-emerald-400 underline">console.groq.com</a>.</span>
+                  )}
+                  {provider === "openrouter" && (
+                    <span>🔑 Access any open-source or commercial model via <a href="https://openrouter.ai/keys" target="_blank" rel="noreferrer" className="text-emerald-400 underline">openrouter.ai</a>.</span>
+                  )}
+                </p>
               </div>
 
               {/* System Instructions / Prompt */}
