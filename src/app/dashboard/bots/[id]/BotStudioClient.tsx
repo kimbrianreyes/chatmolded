@@ -1027,6 +1027,18 @@ export default function BotStudioClient({
                     <code>{getEmbedSnippet()}</code>
                   </pre>
                 </div>
+
+                {/* Playground Test Link */}
+                <div className="pt-2">
+                  <Link
+                    href={`/test-embed?botId=${bot.id}`}
+                    target="_blank"
+                    className="inline-flex items-center gap-2 rounded-xl bg-white/[0.04] border border-white/10 px-4 py-2.5 text-xs font-bold text-white hover:bg-white/[0.08] hover:border-emerald-500/30 transition-all"
+                  >
+                    <Sparkle weight="fill" className="h-4 w-4 text-emerald-400" />
+                    <span>Open Live Embed Playground &rarr;</span>
+                  </Link>
+                </div>
               </div>
             </div>
           )}

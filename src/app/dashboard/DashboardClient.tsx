@@ -382,15 +382,19 @@ export default function DashboardClient({
               <pre>{getEmbedSnippet(activeEmbedBot)}</pre>
             </div>
 
-            <div className="mt-5 flex items-center justify-between pt-3 border-t border-white/[0.06]">
-              <span className="text-[11px] text-emerald-400 flex items-center gap-1.5">
-                <ShieldCheck weight="bold" className="h-3.5 w-3.5" />
-                Sandboxed Iframe Protected
-              </span>
+            <div className="mt-5 flex items-center justify-between pt-3 border-t border-white/[0.06] gap-3 flex-wrap">
+              <Link
+                href={`/test-embed?botId=${activeEmbedBot.id}`}
+                target="_blank"
+                className="text-[11px] font-semibold text-emerald-400 hover:text-emerald-300 flex items-center gap-1.5 underline underline-offset-4"
+              >
+                <Sparkle weight="fill" className="h-3.5 w-3.5" />
+                <span>Test on Live Playground &rarr;</span>
+              </Link>
 
               <button
                 onClick={() => handleCopyEmbed(activeEmbedBot)}
-                className="flex items-center gap-1.5 rounded-lg bg-emerald-500 px-4 py-2 text-xs font-bold text-slate-950 hover:bg-emerald-400 transition-all"
+                className="flex items-center gap-1.5 rounded-lg bg-emerald-500 px-4 py-2 text-xs font-bold text-slate-950 hover:bg-emerald-400 transition-all shadow"
               >
                 {copiedEmbed ? (
                   <>
