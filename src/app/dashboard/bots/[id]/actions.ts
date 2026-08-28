@@ -17,7 +17,7 @@ export interface UpdateBotPayload {
   provider: AIProvider;
   model: string;
   api_key_encrypted?: string | null;
-  rate_limit_per_minute: number;
+  rate_limit_per_minute?: number;
   is_active: boolean;
 }
 
