@@ -39,7 +39,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark scroll-smooth" data-scroll-behavior="smooth">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-[#06080d] text-slate-100 antialiased selection:bg-indigo-500 selection:text-white flex flex-col`}
+        className={`${geistSans.variable} ${geistMono.variable} font-[family-name:var(--font-geist-sans)] min-h-screen bg-[var(--surface-0)] text-[var(--text-primary)] antialiased flex flex-col`}
       >
         {children}
       </body>

@@ -30,7 +30,8 @@ import {
   SpinnerGap,
   ArrowClockwise,
   User,
-  Lightning
+  Lightning,
+  Check,
 } from "@phosphor-icons/react";
 
 interface BotStudioClientProps {
@@ -53,7 +54,7 @@ export default function BotStudioClient({
   const [theme, setTheme] = useState<BotTheme>(bot.theme);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(bot.avatar_url);
   const [position, setPosition] = useState(bot.position || "bottom-right");
-  
+
   // Sample Questions
   const rawQuestions = Array.isArray(bot.sample_questions)
     ? (bot.sample_questions as string[])
@@ -358,24 +359,24 @@ export default function BotStudioClient({
   };
 
   return (
-    <div className="min-h-screen bg-[#06080d] text-slate-100 flex flex-col font-sans selection:bg-emerald-500/30">
-      {/* Studio Top Floating Navbar */}
-      <header className="sticky top-0 z-40 border-b border-white/[0.08] bg-[#070a12]/90 backdrop-blur-xl">
+    <div className="min-h-screen bg-[var(--surface-0)] text-[var(--text-primary)] flex flex-col font-[family-name:var(--font-geist-sans)] selection:bg-emerald-500/30">
+      {/* ── Studio Top Floating Glass Navbar ── */}
+      <header className="sticky top-0 z-40 border-b border-[var(--border-subtle)] bg-[var(--surface-0)]/90 backdrop-blur-2xl">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-4">
             <Link
               href="/dashboard"
-              className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs font-semibold text-slate-300 hover:text-white hover:border-white/25 hover:bg-white/[0.06] transition-all"
+              className="flex items-center gap-2 rounded-xl border border-[var(--border-default)] bg-white/[0.03] px-3.5 py-2 text-xs font-semibold text-[var(--text-secondary)] hover:text-white hover:border-[var(--border-hover)] hover:bg-white/[0.06] active:scale-[0.97] transition-all"
             >
               <ArrowLeft weight="bold" className="h-3.5 w-3.5" />
               <span>Dashboard</span>
             </Link>
 
-            <div className="h-4 w-px bg-white/10" />
+            <div className="h-4 w-px bg-[var(--border-subtle)]" />
 
             <div className="flex items-center gap-3">
               <div className="relative">
-                <div className="h-8 w-8 rounded-xl bg-white/5 border border-white/15 flex items-center justify-center text-xs overflow-hidden shadow-inner">
+                <div className="h-9 w-9 rounded-xl bg-white/5 border border-[var(--border-default)] flex items-center justify-center text-xs overflow-hidden shadow-[inset_0_1px_1px_rgba(255,255,255,0.08)]">
                   {avatarUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
@@ -385,13 +386,13 @@ export default function BotStudioClient({
                     </span>
                   )}
                 </div>
-                <span className={`absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full ${isActive ? "bg-emerald-400" : "bg-slate-500"} ring-2 ring-[#070a12]`} />
+                <span className={`absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full ${isActive ? "bg-emerald-400" : "bg-slate-500"} ring-2 ring-[var(--surface-0)]`} />
               </div>
 
               <div>
                 <div className="flex items-center gap-2">
                   <span className="font-bold text-sm text-white tracking-tight">{name}</span>
-                  <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 font-mono text-[9px] font-semibold text-emerald-400 border border-emerald-500/20">
+                  <span className="rounded-full bg-emerald-500/10 px-2.5 py-0.5 font-mono text-[10px] font-semibold text-emerald-400 border border-emerald-500/20">
                     Studio Mode
                   </span>
                 </div>
@@ -403,20 +404,20 @@ export default function BotStudioClient({
           <div className="flex items-center gap-3">
             <button
               onClick={() => setIsActive(!isActive)}
-              className={`hidden sm:flex items-center gap-2 rounded-xl px-3 py-1.5 text-xs font-mono border transition-all ${
+              className={`hidden sm:flex items-center gap-2 rounded-xl px-3.5 py-2 text-xs font-mono border transition-all active:scale-[0.97] ${
                 isActive
                   ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300 shadow-sm"
-                  : "border-white/10 bg-white/[0.03] text-slate-400"
+                  : "border-[var(--border-default)] bg-white/[0.03] text-[var(--text-tertiary)]"
               }`}
             >
-              <span className={`h-1.5 w-1.5 rounded-full ${isActive ? "bg-emerald-400 animate-pulse" : "bg-slate-500"}`} />
+              <span className={`h-1.5 w-1.5 rounded-full ${isActive ? "bg-emerald-400 animate-pulse-soft" : "bg-slate-500"}`} />
               <span>{isActive ? "Status: Active" : "Status: Paused"}</span>
             </button>
 
             <button
               onClick={handleSaveChanges}
               disabled={saving}
-              className={`group flex items-center gap-2 rounded-xl ${currentTheme.bg} px-4 py-2 text-xs font-bold text-slate-950 shadow-lg hover:opacity-90 transition-all active:scale-95 disabled:opacity-50`}
+              className={`group flex items-center gap-2 rounded-xl ${currentTheme.bg} px-5 py-2.5 text-xs font-bold text-slate-950 shadow-lg shadow-emerald-500/20 hover:opacity-95 active:scale-[0.97] disabled:opacity-50 transition-all`}
             >
               {saveSuccess ? (
                 <>
@@ -434,13 +435,13 @@ export default function BotStudioClient({
         </div>
       </header>
 
-      {/* Main Studio Workspace (Left Config Double-Bezel + Right Simulator Double-Bezel) */}
+      {/* ── Main Studio Workspace ── */}
       <div className="mx-auto max-w-7xl flex-1 px-4 sm:px-6 lg:px-8 py-8 w-full grid grid-cols-1 lg:grid-cols-12 gap-8">
         
         {/* ================= LEFT CONFIGURATION PANEL (7 COLS) ================= */}
-        <div className="lg:col-span-7 flex flex-col space-y-6">
+        <div className="lg:col-span-7 flex flex-col space-y-6 animate-fade-in-up">
           {/* Navigation Tabs Bar */}
-          <div className="flex items-center gap-1.5 rounded-2xl border border-white/10 bg-[#090d18] p-1.5 text-xs font-medium shadow-xl">
+          <div className="flex items-center gap-1.5 rounded-2xl border border-[var(--border-default)] bg-[var(--surface-1)] p-1.5 text-xs font-medium shadow-xl">
             {[
               { id: "appearance", label: "Appearance", icon: PaintBrush },
               { id: "knowledge", label: `Knowledge (${documents.length})`, icon: BookOpen },
@@ -453,10 +454,10 @@ export default function BotStudioClient({
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id as typeof activeTab)}
-                  className={`flex-1 flex items-center justify-center gap-2 rounded-xl py-2.5 transition-all ${
+                  className={`flex-1 flex items-center justify-center gap-2 rounded-xl py-2.5 transition-all text-xs ${
                     isSelected
                       ? `${currentTheme.bg} text-slate-950 font-bold shadow-md`
-                      : "text-slate-400 hover:text-white hover:bg-white/[0.04]"
+                      : "text-[var(--text-secondary)] hover:text-white hover:bg-white/[0.04]"
                   }`}
                 >
                   <Icon weight={isSelected ? "bold" : "regular"} className="h-4 w-4" />
@@ -468,18 +469,18 @@ export default function BotStudioClient({
 
           {/* TAB 1: APPEARANCE & BRANDING (Double-Bezel Architecture) */}
           {activeTab === "appearance" && (
-            <div className="p-1.5 rounded-[2rem] bg-white/[0.02] ring-1 ring-white/10 shadow-2xl">
-              <div className="rounded-[calc(2rem-0.375rem)] bg-[#090d18] p-6 space-y-6">
-                <div className="flex items-center justify-between border-b border-white/[0.08] pb-4">
+            <div className="bezel-shell animate-fade-in">
+              <div className="bezel-core p-7 space-y-6">
+                <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-4">
                   <div>
-                    <h2 className="text-sm font-bold text-white tracking-tight">
+                    <h2 className="text-headline text-base text-white">
                       Bot Appearance &amp; Identity
                     </h2>
-                    <p className="text-xs text-slate-400">
+                    <p className="text-xs text-[var(--text-secondary)] mt-1">
                       Customize how your AI chatbot looks when embedded on your website.
                     </p>
                   </div>
-                  <span className={`rounded-full px-2.5 py-1 text-[10px] font-mono ${currentTheme.badge} border ${currentTheme.border}`}>
+                  <span className={`rounded-full px-2.5 py-1 text-[10px] font-mono font-semibold ${currentTheme.badge} border ${currentTheme.border}`}>
                     Live Theming
                   </span>
                 </div>
@@ -487,39 +488,39 @@ export default function BotStudioClient({
                 {/* Bot Name & Subtitle */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block font-medium text-xs text-slate-300 mb-1.5">
+                    <label className="block text-[13px] font-semibold text-[var(--text-secondary)] mb-2">
                       Chatbot Name
                     </label>
                     <input
                       type="text"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="w-full rounded-xl border border-white/10 bg-[#05070d] px-3.5 py-2.5 text-xs text-white focus:border-white/30 focus:outline-none transition-all"
+                      className="w-full rounded-xl border border-[var(--border-default)] bg-[var(--surface-2)] px-4 py-2.5 text-sm text-white placeholder-[var(--text-muted)] focus:outline-none"
                       placeholder="e.g. Alex Portfolio Assistant"
                     />
                   </div>
 
                   <div>
-                    <label className="block font-medium text-xs text-slate-300 mb-1.5">
+                    <label className="block text-[13px] font-semibold text-[var(--text-secondary)] mb-2">
                       Short Description / Subtitle
                     </label>
                     <input
                       type="text"
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
-                      className="w-full rounded-xl border border-white/10 bg-[#05070d] px-3.5 py-2.5 text-xs text-white focus:border-white/30 focus:outline-none transition-all"
-                      placeholder="e.g. Ask me anything about my projects and tech stack"
+                      className="w-full rounded-xl border border-[var(--border-default)] bg-[var(--surface-2)] px-4 py-2.5 text-sm text-white placeholder-[var(--text-muted)] focus:outline-none"
+                      placeholder="e.g. Ask me anything about my projects"
                     />
                   </div>
                 </div>
 
                 {/* Custom Logo Upload */}
-                <div className="border-t border-white/[0.06] pt-5">
-                  <label className="block font-medium text-xs text-slate-300 mb-2">
+                <div className="border-t border-[var(--border-subtle)] pt-5">
+                  <label className="block text-[13px] font-semibold text-[var(--text-secondary)] mb-2">
                     Custom Logo / Avatar Image
                   </label>
                   <div className="flex items-center gap-4">
-                    <div className="h-14 w-14 rounded-2xl border border-white/15 bg-[#05070d] flex items-center justify-center overflow-hidden shadow-inner">
+                    <div className="h-14 w-14 rounded-2xl border border-[var(--border-default)] bg-[var(--surface-2)] flex items-center justify-center overflow-hidden shadow-[inset_0_1px_1px_rgba(255,255,255,0.08)]">
                       {avatarUrl ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={avatarUrl} alt="Avatar" className="h-full w-full object-cover" />
@@ -541,9 +542,9 @@ export default function BotStudioClient({
                       <button
                         type="button"
                         onClick={() => fileInputRef.current?.click()}
-                        className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-2 text-xs font-semibold text-slate-200 hover:bg-white/[0.08] hover:text-white transition-all shadow-sm"
+                        className="flex items-center gap-2 rounded-xl border border-[var(--border-default)] bg-white/[0.04] px-4 py-2.5 text-xs font-semibold text-[var(--text-secondary)] hover:bg-white/[0.08] hover:text-white transition-all shadow-sm active:scale-[0.97]"
                       >
-                        <UploadSimple weight="bold" className="h-3.5 w-3.5" />
+                        <UploadSimple weight="bold" className="h-4 w-4" />
                         <span>Upload Image</span>
                       </button>
 
@@ -551,7 +552,7 @@ export default function BotStudioClient({
                         <button
                           type="button"
                           onClick={() => setAvatarUrl(null)}
-                          className="rounded-xl p-2 text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 transition-all"
+                          className="rounded-xl p-2.5 text-[var(--text-muted)] hover:text-rose-400 hover:bg-rose-500/10 transition-all active:scale-[0.97]"
                           title="Remove Avatar"
                         >
                           <Trash weight="bold" className="h-4 w-4" />
@@ -562,8 +563,8 @@ export default function BotStudioClient({
                 </div>
 
                 {/* Theme Color Palette */}
-                <div className="border-t border-white/[0.06] pt-5">
-                  <label className="block font-medium text-xs text-slate-300 mb-2.5">
+                <div className="border-t border-[var(--border-subtle)] pt-5">
+                  <label className="block text-[13px] font-semibold text-[var(--text-secondary)] mb-2.5">
                     Widget Accent Theme
                   </label>
                   <div className="grid grid-cols-4 gap-3">
@@ -572,10 +573,10 @@ export default function BotStudioClient({
                         key={t}
                         type="button"
                         onClick={() => setTheme(t)}
-                        className={`flex items-center justify-center gap-2 rounded-2xl border p-3 text-xs capitalize transition-all ${
+                        className={`flex items-center justify-center gap-2.5 rounded-2xl border p-3.5 text-xs capitalize transition-all active:scale-[0.97] ${
                           theme === t
                             ? "border-white/30 bg-white/[0.08] font-bold text-white shadow-lg ring-1 ring-white/20"
-                            : "border-white/10 bg-[#05070d] text-slate-400 hover:text-white hover:border-white/20"
+                            : "border-[var(--border-default)] bg-[var(--surface-2)] text-[var(--text-secondary)] hover:text-white hover:border-[var(--border-hover)]"
                         }`}
                       >
                         <span className={`h-3.5 w-3.5 rounded-full ${themeColors[t].bg} shadow-sm`} />
@@ -586,39 +587,39 @@ export default function BotStudioClient({
                 </div>
 
                 {/* Welcome Message */}
-                <div className="border-t border-white/[0.06] pt-5">
-                  <label className="block font-medium text-xs text-slate-300 mb-1.5">
+                <div className="border-t border-[var(--border-subtle)] pt-5">
+                  <label className="block text-[13px] font-semibold text-[var(--text-secondary)] mb-2">
                     Welcome Greeting Message
                   </label>
                   <textarea
                     rows={2}
                     value={welcomeMessage}
                     onChange={(e) => setWelcomeMessage(e.target.value)}
-                    className="w-full rounded-xl border border-white/10 bg-[#05070d] p-3 text-xs text-white focus:border-white/30 focus:outline-none leading-relaxed transition-all"
+                    className="w-full rounded-xl border border-[var(--border-default)] bg-[var(--surface-2)] p-3.5 text-sm text-white placeholder-[var(--text-muted)] focus:outline-none leading-relaxed transition-all"
                     placeholder="Hi! I'm an AI assistant. How can I help you today?"
                   />
                 </div>
 
                 {/* Starter Sample Questions */}
-                <div className="border-t border-white/[0.06] pt-5">
+                <div className="border-t border-[var(--border-subtle)] pt-5">
                   <div className="flex items-center justify-between mb-2.5">
-                    <label className="font-medium text-xs text-slate-300">
+                    <label className="text-[13px] font-semibold text-[var(--text-secondary)]">
                       Suggested Starter Questions ({sampleQuestions.length}/4)
                     </label>
-                    <span className="text-[10px] text-slate-500 font-mono">1-click prompts</span>
+                    <span className="text-[11px] text-[var(--text-tertiary)] font-mono">1-click prompts</span>
                   </div>
 
                   <div className="space-y-2">
                     {sampleQuestions.map((q, idx) => (
                       <div
                         key={idx}
-                        className="flex items-center justify-between gap-2 rounded-xl border border-white/10 bg-[#05070d] px-3.5 py-2 text-xs text-slate-300 shadow-sm"
+                        className="flex items-center justify-between gap-2 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-2)] px-4 py-2.5 text-xs text-[var(--text-secondary)] shadow-sm"
                       >
                         <span className="truncate">&ldquo;{q}&rdquo;</span>
                         <button
                           type="button"
                           onClick={() => handleRemoveQuestion(idx)}
-                          className="text-slate-500 hover:text-rose-400 p-1 transition-colors"
+                          className="text-[var(--text-tertiary)] hover:text-rose-400 p-1 transition-colors"
                         >
                           <Trash weight="bold" className="h-3.5 w-3.5" />
                         </button>
@@ -632,12 +633,12 @@ export default function BotStudioClient({
                           value={newQuestion}
                           onChange={(e) => setNewQuestion(e.target.value)}
                           placeholder="e.g. What are your pricing plans?"
-                          className="flex-1 rounded-xl border border-white/10 bg-[#05070d] px-3.5 py-2 text-xs text-white focus:border-white/30 focus:outline-none transition-all"
+                          className="flex-1 rounded-xl border border-[var(--border-default)] bg-[var(--surface-2)] px-4 py-2.5 text-xs text-white placeholder-[var(--text-muted)] focus:outline-none transition-all"
                         />
                         <button
                           type="button"
                           onClick={handleAddQuestion}
-                          className="flex items-center gap-1 rounded-xl bg-white/[0.08] px-4 py-2 text-xs font-bold text-white hover:bg-white/[0.14] transition-all shadow-sm"
+                          className="flex items-center gap-1.5 rounded-xl bg-white/[0.08] px-4 py-2.5 text-xs font-bold text-white hover:bg-white/[0.14] transition-all shadow-sm active:scale-[0.97]"
                         >
                           <Plus weight="bold" className="h-3.5 w-3.5" />
                           <span>Add</span>
@@ -652,12 +653,12 @@ export default function BotStudioClient({
 
           {/* TAB 2: KNOWLEDGE BASE (Double-Bezel Architecture) */}
           {activeTab === "knowledge" && (
-            <div className="p-1.5 rounded-[2rem] bg-white/[0.02] ring-1 ring-white/10 shadow-2xl">
-              <div className="rounded-[calc(2rem-0.375rem)] bg-[#090d18] p-6 space-y-6">
-                <div className="flex items-center justify-between border-b border-white/[0.08] pb-4">
+            <div className="bezel-shell animate-fade-in">
+              <div className="bezel-core p-7 space-y-6">
+                <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-4">
                   <div>
-                    <h2 className="text-sm font-bold text-white tracking-tight">Document &amp; Knowledge Ingestion</h2>
-                    <p className="text-xs text-slate-400">
+                    <h2 className="text-headline text-base text-white">Document &amp; Knowledge Ingestion</h2>
+                    <p className="text-xs text-[var(--text-secondary)] mt-1">
                       Upload PDFs, DOCX, Markdown, or raw notes to train your AI chatbot.
                     </p>
                   </div>
@@ -697,7 +698,7 @@ export default function BotStudioClient({
                   className={`relative rounded-2xl border-2 border-dashed p-8 text-center transition-all ${
                     isDragging
                       ? "border-emerald-500 bg-emerald-500/[0.08] scale-[0.99]"
-                      : "border-white/15 bg-[#05070d] hover:border-white/30"
+                      : "border-[var(--border-default)] bg-[var(--surface-2)] hover:border-[var(--border-hover)]"
                   }`}
                 >
                   <input
@@ -712,7 +713,7 @@ export default function BotStudioClient({
                   />
 
                   <div className="flex flex-col items-center justify-center space-y-3">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/[0.04] text-emerald-400 border border-white/10 shadow-inner">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/[0.04] text-emerald-400 border border-[var(--border-default)] shadow-inner">
                       {uploadingFile ? (
                         <SpinnerGap weight="bold" className="h-6 w-6 animate-spin" />
                       ) : (
@@ -721,21 +722,21 @@ export default function BotStudioClient({
                     </div>
 
                     <div>
-                      <p className="text-xs font-bold text-white">
+                      <p className="text-sm font-bold text-white">
                         {uploadingFile ? "Parsing & Chunking Document..." : "Drag & drop your document here, or"}
                       </p>
                       {!uploadingFile && (
                         <button
                           type="button"
                           onClick={() => docFileInputRef.current?.click()}
-                          className={`mt-1 text-xs font-bold ${currentTheme.text} hover:underline underline-offset-2`}
+                          className={`mt-1.5 text-xs font-bold ${currentTheme.text} hover:underline underline-offset-2`}
                         >
                           Browse Files from Computer
                         </button>
                       )}
                     </div>
 
-                    <div className="flex items-center gap-2 text-[10px] text-slate-500 font-mono">
+                    <div className="flex items-center gap-2 text-[11px] text-[var(--text-tertiary)] font-mono">
                       <span>PDF</span>
                       <span>•</span>
                       <span>DOCX</span>
@@ -748,7 +749,7 @@ export default function BotStudioClient({
                 </div>
 
                 {/* 2. Direct Text Knowledge Input */}
-                <form onSubmit={handleAddTextDocument} className="space-y-3.5 rounded-2xl border border-white/10 bg-[#05070d] p-5 shadow-sm">
+                <form onSubmit={handleAddTextDocument} className="space-y-3.5 rounded-2xl border border-[var(--border-default)] bg-[var(--surface-2)] p-5 shadow-sm">
                   <span className="text-xs font-bold text-white flex items-center gap-2">
                     <Sparkle weight="fill" className={`h-3.5 w-3.5 ${currentTheme.text}`} />
                     Or Paste Raw Notes &amp; Markdown
@@ -759,7 +760,7 @@ export default function BotStudioClient({
                     placeholder="Document Title (e.g. Portfolio Bio / Experience)"
                     value={textDocTitle}
                     onChange={(e) => setTextDocTitle(e.target.value)}
-                    className="w-full rounded-xl border border-white/10 bg-[#070912] px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:border-white/30 focus:outline-none transition-all"
+                    className="w-full rounded-xl border border-[var(--border-default)] bg-[var(--surface-1)] px-4 py-2.5 text-xs text-white placeholder-[var(--text-muted)] focus:outline-none transition-all"
                   />
 
                   <textarea
@@ -768,13 +769,13 @@ export default function BotStudioClient({
                     placeholder="Paste resume details, tech stack, FAQs, or bio context..."
                     value={textDocContent}
                     onChange={(e) => setTextDocContent(e.target.value)}
-                    className="w-full rounded-xl border border-white/10 bg-[#070912] p-3 text-xs text-white placeholder-slate-500 focus:border-white/30 focus:outline-none font-mono text-[11px] leading-relaxed transition-all"
+                    className="w-full rounded-xl border border-[var(--border-default)] bg-[var(--surface-1)] p-3.5 text-xs text-white placeholder-[var(--text-muted)] focus:outline-none font-mono text-[11px] leading-relaxed transition-all"
                   />
 
                   <button
                     type="submit"
                     disabled={addingDoc || !textDocContent.trim()}
-                    className={`flex items-center gap-1.5 rounded-xl ${currentTheme.bg} px-4 py-2 text-xs font-bold text-slate-950 hover:opacity-90 transition-all disabled:opacity-50 shadow-md`}
+                    className={`flex items-center gap-2 rounded-xl ${currentTheme.bg} px-5 py-2.5 text-xs font-bold text-slate-950 hover:opacity-95 active:scale-[0.97] transition-all disabled:opacity-50 shadow-md`}
                   >
                     <Plus weight="bold" className="h-3.5 w-3.5" />
                     <span>{addingDoc ? "Ingesting..." : "Ingest Text"}</span>
@@ -783,12 +784,12 @@ export default function BotStudioClient({
 
                 {/* 3. Ingested Documents List */}
                 <div className="space-y-3">
-                  <h3 className="text-xs font-bold uppercase tracking-wider font-mono text-slate-400">
+                  <h3 className="text-label text-[var(--text-tertiary)] font-mono">
                     Ingested Knowledge Documents ({documents.length})
                   </h3>
 
                   {documents.length === 0 ? (
-                    <div className="rounded-2xl border border-dashed border-white/10 p-6 text-center text-xs text-slate-500">
+                    <div className="rounded-2xl border border-dashed border-[var(--border-default)] p-6 text-center text-xs text-[var(--text-tertiary)]">
                       No documents uploaded yet. Drag &amp; drop a PDF or paste text above!
                     </div>
                   ) : (
@@ -796,15 +797,15 @@ export default function BotStudioClient({
                       {documents.map((doc) => (
                         <div
                           key={doc.id}
-                          className="flex items-center justify-between rounded-2xl border border-white/[0.08] bg-[#05070d] p-3.5 text-xs hover:border-white/20 transition-all shadow-sm"
+                          className="flex items-center justify-between rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-2)] p-4 text-xs hover:border-[var(--border-hover)] transition-all shadow-sm"
                         >
                           <div className="flex items-center gap-3.5 truncate">
-                            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/[0.04] border border-white/10 shadow-inner">
+                            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/[0.04] border border-[var(--border-default)] shadow-inner">
                               {getFileIcon(doc.file_type)}
                             </div>
                             <div className="truncate">
-                              <p className="font-semibold text-white truncate">{doc.file_name}</p>
-                              <p className="text-[10px] text-slate-400 font-mono">
+                              <p className="font-semibold text-white truncate text-sm">{doc.file_name}</p>
+                              <p className="text-[11px] text-[var(--text-tertiary)] font-mono mt-0.5">
                                 {formatBytes(doc.file_size_bytes)} • {doc.chunk_count} chunks indexed
                               </p>
                             </div>
@@ -813,7 +814,7 @@ export default function BotStudioClient({
                           <button
                             type="button"
                             onClick={() => handleDeleteDocument(doc.id)}
-                            className="rounded-xl p-2 text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 transition-all"
+                            className="rounded-xl p-2 text-[var(--text-muted)] hover:text-rose-400 hover:bg-rose-500/10 transition-all active:scale-[0.97]"
                             title="Delete Document"
                           >
                             <Trash weight="bold" className="h-4 w-4" />
@@ -829,14 +830,14 @@ export default function BotStudioClient({
 
           {/* TAB 3: BYOK AI ENGINE (Double-Bezel Architecture) */}
           {activeTab === "ai" && (
-            <div className="p-1.5 rounded-[2rem] bg-white/[0.02] ring-1 ring-white/10 shadow-2xl">
-              <div className="rounded-[calc(2rem-0.375rem)] bg-[#090d18] p-6 space-y-6">
-                <div className="flex items-center justify-between border-b border-white/[0.08] pb-4">
+            <div className="bezel-shell animate-fade-in">
+              <div className="bezel-core p-7 space-y-6">
+                <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-4">
                   <div>
-                    <h2 className="text-sm font-bold text-white tracking-tight">
+                    <h2 className="text-headline text-base text-white">
                       BYOK AI Engine &amp; Inference Provider
                     </h2>
-                    <p className="text-xs text-slate-400">
+                    <p className="text-xs text-[var(--text-secondary)] mt-1">
                       Choose any AI provider and bring your API key for 100% cost-free inference.
                     </p>
                   </div>
@@ -848,36 +849,97 @@ export default function BotStudioClient({
                 {/* Provider Selector Cards */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                   {[
-                    { id: "groq", name: "Groq", subtitle: "Llama 3.1 (Free & Fast)" },
-                    { id: "openrouter", name: "OpenRouter", subtitle: "100+ Free & Paid Models" },
-                    { id: "xai", name: "xAI (Grok)", subtitle: "grok-beta (console.x.ai)" },
-                    { id: "openai", name: "OpenAI", subtitle: "GPT-4o-mini" },
-                    { id: "deepseek", name: "DeepSeek", subtitle: "deepseek-chat (V3)" },
-                    { id: "gemini", name: "Gemini", subtitle: "Flash 1.5 (Free)" },
-                    { id: "anthropic", name: "Anthropic", subtitle: "Claude 3.5 Haiku" },
-                    { id: "custom", name: "Custom / Any", subtitle: "Self-Hosted / Other" },
+                    {
+                      id: "openrouter",
+                      name: "OpenRouter",
+                      subtitle: "100+ Models (Laguna, Llama 3.3)",
+                      isFree: true,
+                      badge: "100% FREE",
+                    },
+                    {
+                      id: "gemini",
+                      name: "Google Gemini",
+                      subtitle: "Gemini 1.5 Flash (15 RPM Free)",
+                      isFree: true,
+                      badge: "100% FREE",
+                    },
+                    {
+                      id: "groq",
+                      name: "Groq",
+                      subtitle: "Llama 3.1 Instant (~700 t/s)",
+                      isFree: true,
+                      badge: "FREE TIER",
+                    },
+                    {
+                      id: "openai",
+                      name: "OpenAI",
+                      subtitle: "GPT-4o-mini & GPT-4o",
+                      isFree: false,
+                      badge: "PAY-AS-YOU-GO",
+                    },
+                    {
+                      id: "xai",
+                      name: "xAI (Grok)",
+                      subtitle: "grok-beta (console.x.ai)",
+                      isFree: false,
+                      badge: "PREPAID CREDITS",
+                    },
+                    {
+                      id: "deepseek",
+                      name: "DeepSeek",
+                      subtitle: "deepseek-chat (V3)",
+                      isFree: false,
+                      badge: "PAY-AS-YOU-GO",
+                    },
+                    {
+                      id: "anthropic",
+                      name: "Anthropic",
+                      subtitle: "Claude 3.5 Haiku",
+                      isFree: false,
+                      badge: "PAY-AS-YOU-GO",
+                    },
+                    {
+                      id: "custom",
+                      name: "Custom / Any",
+                      subtitle: "Self-Hosted / Other Endpoint",
+                      isFree: false,
+                      badge: "CUSTOM",
+                    },
                   ].map((p) => (
                     <button
                       key={p.id}
                       type="button"
                       onClick={() => {
                         setProvider(p.id as AIProvider);
+                        if (p.id === "openrouter") setModel("poolside/laguna-s-2.1:free");
+                        if (p.id === "gemini") setModel("gemini-1.5-flash");
                         if (p.id === "groq") setModel("llama-3.1-8b-instant");
-                        if (p.id === "xai") setModel("grok-beta");
                         if (p.id === "openai") setModel("gpt-4o-mini");
+                        if (p.id === "xai") setModel("grok-beta");
                         if (p.id === "deepseek") setModel("deepseek-chat");
                         if (p.id === "anthropic") setModel("claude-3-5-haiku-20241022");
-                        if (p.id === "gemini") setModel("gemini-1.5-flash");
-                        if (p.id === "openrouter") setModel("poolside/laguna-s-2.1:free");
                       }}
-                      className={`rounded-2xl border p-3.5 text-left transition-all ${
+                      className={`rounded-2xl border p-3.5 text-left transition-all flex flex-col justify-between active:scale-[0.97] ${
                         provider === p.id
-                          ? "border-white/30 bg-white/[0.08] shadow-lg ring-1 ring-white/20"
-                          : "border-white/10 bg-[#05070d] text-slate-400 hover:text-white hover:border-white/20"
+                          ? "border-emerald-500/50 bg-emerald-500/[0.08] shadow-lg ring-1 ring-emerald-500/30"
+                          : "border-[var(--border-default)] bg-[var(--surface-2)] text-[var(--text-secondary)] hover:text-white hover:border-[var(--border-hover)]"
                       }`}
                     >
-                      <p className="font-bold text-xs text-white">{p.name}</p>
-                      <p className="text-[10px] text-slate-400 mt-1 leading-snug">{p.subtitle}</p>
+                      <div>
+                        <div className="flex items-center justify-between gap-1 mb-1.5">
+                          <p className="font-bold text-xs text-white">{p.name}</p>
+                          <span
+                            className={`rounded-full px-1.5 py-0.5 text-[8.5px] font-mono font-bold tracking-wider ${
+                              p.isFree
+                                ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
+                                : "bg-amber-500/10 text-amber-300 border border-amber-500/20"
+                            }`}
+                          >
+                            {p.badge}
+                          </span>
+                        </div>
+                        <p className="text-[10px] text-[var(--text-tertiary)] leading-snug">{p.subtitle}</p>
+                      </div>
                     </button>
                   ))}
                 </div>
@@ -886,29 +948,52 @@ export default function BotStudioClient({
                 <div className="space-y-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block font-medium text-xs text-slate-300 mb-1.5">
+                      <label className="block text-[13px] font-semibold text-[var(--text-secondary)] mb-2">
                         Model Identifier
                       </label>
                       <input
                         type="text"
                         value={model}
                         onChange={(e) => setModel(e.target.value)}
-                        placeholder="e.g. llama-3.1-8b-instant"
-                        className="w-full rounded-xl border border-white/10 bg-[#05070d] px-3.5 py-2.5 text-xs font-mono text-white placeholder-slate-600 focus:border-white/30 focus:outline-none transition-all"
+                        placeholder="e.g. poolside/laguna-s-2.1:free"
+                        className="w-full rounded-xl border border-[var(--border-default)] bg-[var(--surface-2)] px-4 py-2.5 text-xs font-mono text-white placeholder-[var(--text-muted)] focus:outline-none transition-all"
                       />
 
                       {/* Quick Model Selector Pills */}
-                      {provider === "groq" && (
-                        <div className="flex flex-wrap gap-1.5 mt-2">
-                          {["llama-3.1-8b-instant", "llama-3.3-70b-versatile", "mixtral-8x7b-32768"].map((m) => (
+                      {provider === "openrouter" && (
+                        <div className="flex flex-wrap gap-1.5 mt-2.5">
+                          {[
+                            { name: "laguna-s-2.1 (Free)", id: "poolside/laguna-s-2.1:free" },
+                            { name: "llama-3.3-70b", id: "meta-llama/llama-3.3-70b-instruct" },
+                            { name: "mistral-7b (Free)", id: "mistralai/mistral-7b-instruct:free" },
+                          ].map((m) => (
+                            <button
+                              key={m.id}
+                              type="button"
+                              onClick={() => setModel(m.id)}
+                              className={`rounded-lg px-2.5 py-1 font-mono text-[10px] border transition-all active:scale-[0.97] ${
+                                model === m.id
+                                  ? `${currentTheme.badge} ${currentTheme.border} font-bold`
+                                  : "border-[var(--border-default)] bg-white/[0.02] text-[var(--text-secondary)] hover:text-white"
+                              }`}
+                            >
+                              {m.name}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+
+                      {provider === "gemini" && (
+                        <div className="flex flex-wrap gap-1.5 mt-2.5">
+                          {["gemini-1.5-flash", "gemini-1.5-pro"].map((m) => (
                             <button
                               key={m}
                               type="button"
                               onClick={() => setModel(m)}
-                              className={`rounded-lg px-2.5 py-1 font-mono text-[10px] border transition-all ${
+                              className={`rounded-lg px-2.5 py-1 font-mono text-[10px] border transition-all active:scale-[0.97] ${
                                 model === m
                                   ? `${currentTheme.badge} ${currentTheme.border} font-bold`
-                                  : "border-white/10 bg-white/[0.02] text-slate-400 hover:text-white"
+                                  : "border-[var(--border-default)] bg-white/[0.02] text-[var(--text-secondary)] hover:text-white"
                               }`}
                             >
                               {m}
@@ -917,20 +1002,20 @@ export default function BotStudioClient({
                         </div>
                       )}
 
-                      {provider === "openrouter" && (
-                        <div className="flex flex-wrap gap-1.5 mt-2">
-                          {["poolside/laguna-s-2.1:free", "meta-llama/llama-3.3-70b-instruct", "mistralai/mistral-7b-instruct:free"].map((m) => (
+                      {provider === "groq" && (
+                        <div className="flex flex-wrap gap-1.5 mt-2.5">
+                          {["llama-3.1-8b-instant", "llama-3.3-70b-versatile", "mixtral-8x7b-32768"].map((m) => (
                             <button
                               key={m}
                               type="button"
                               onClick={() => setModel(m)}
-                              className={`rounded-lg px-2.5 py-1 font-mono text-[10px] border transition-all ${
+                              className={`rounded-lg px-2.5 py-1 font-mono text-[10px] border transition-all active:scale-[0.97] ${
                                 model === m
                                   ? `${currentTheme.badge} ${currentTheme.border} font-bold`
-                                  : "border-white/10 bg-white/[0.02] text-slate-400 hover:text-white"
+                                  : "border-[var(--border-default)] bg-white/[0.02] text-[var(--text-secondary)] hover:text-white"
                               }`}
                             >
-                              {m.split("/")[1] || m}
+                              {m}
                             </button>
                           ))}
                         </div>
@@ -938,8 +1023,8 @@ export default function BotStudioClient({
                     </div>
 
                     <div>
-                      <div className="flex items-center justify-between mb-1.5">
-                        <label className="font-medium text-xs text-slate-300">
+                      <div className="flex items-center justify-between mb-2">
+                        <label className="text-[13px] font-semibold text-[var(--text-secondary)]">
                           {provider.toUpperCase()} API Key
                         </label>
                         <span className={`font-mono text-[10px] ${currentTheme.text} flex items-center gap-1`}>
@@ -954,12 +1039,12 @@ export default function BotStudioClient({
                           value={apiKey}
                           onChange={(e) => setApiKey(e.target.value)}
                           placeholder="Paste API Key..."
-                          className="w-full rounded-xl border border-white/10 bg-[#05070d] px-3.5 py-2.5 pr-10 text-xs font-mono text-white placeholder-slate-600 focus:border-white/30 focus:outline-none transition-all"
+                          className="w-full rounded-xl border border-[var(--border-default)] bg-[var(--surface-2)] px-4 py-2.5 pr-10 text-xs font-mono text-white placeholder-[var(--text-muted)] focus:outline-none transition-all"
                         />
                         <button
                           type="button"
                           onClick={() => setShowApiKey(!showApiKey)}
-                          className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-500 hover:text-white transition-colors"
+                          className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-[var(--text-tertiary)] hover:text-white transition-colors"
                         >
                           {showApiKey ? <EyeSlash weight="bold" className="h-4 w-4" /> : <Eye weight="bold" className="h-4 w-4" />}
                         </button>
@@ -967,32 +1052,44 @@ export default function BotStudioClient({
                     </div>
                   </div>
 
-                  <p className="text-[11px] text-slate-400">
+                  <p className="text-[11px] text-[var(--text-secondary)] leading-relaxed">
                     {provider === "openrouter" && (
-                      <span>🔑 Access 100+ models via <a href="https://openrouter.ai/keys" target="_blank" rel="noreferrer" className={`font-semibold ${currentTheme.text} underline`}>openrouter.ai</a>.</span>
+                      <span className="text-emerald-300 font-medium">✨ 100% Free: Get your OpenRouter key with zero card required at <a href="https://openrouter.ai/keys" target="_blank" rel="noreferrer" className={`font-bold ${currentTheme.text} underline`}>openrouter.ai/keys</a>.</span>
+                    )}
+                    {provider === "gemini" && (
+                      <span className="text-emerald-300 font-medium">✨ 100% Free: Generate your free Google Gemini API key at <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className={`font-bold ${currentTheme.text} underline`}>aistudio.google.com</a>.</span>
                     )}
                     {provider === "groq" && (
-                      <span>🔑 Get your free ultra-fast key from <a href="https://console.groq.com/keys" target="_blank" rel="noreferrer" className={`font-semibold ${currentTheme.text} underline`}>console.groq.com</a>.</span>
+                      <span className="text-emerald-300 font-medium">✨ Free Tier: Get your ultra-fast Groq key at <a href="https://console.groq.com/keys" target="_blank" rel="noreferrer" className={`font-bold ${currentTheme.text} underline`}>console.groq.com</a>.</span>
+                    )}
+                    {provider === "openai" && (
+                      <span className="text-amber-300">💳 Pay-as-you-go: Requires an active billing balance on <a href="https://platform.openai.com/api-keys" target="_blank" rel="noreferrer" className="underline font-semibold text-white">platform.openai.com</a>.</span>
                     )}
                     {provider === "xai" && (
-                      <span>🔑 Get your Grok key from <a href="https://console.x.ai" target="_blank" rel="noreferrer" className={`font-semibold ${currentTheme.text} underline`}>console.x.ai</a>.</span>
+                      <span className="text-amber-300">💳 Prepaid Credits: Requires purchased credits/card on <a href="https://console.x.ai" target="_blank" rel="noreferrer" className="underline font-semibold text-white">console.x.ai</a>.</span>
+                    )}
+                    {provider === "deepseek" && (
+                      <span className="text-amber-300">💳 Pay-as-you-go: Requires prepaid balance on <a href="https://platform.deepseek.com" target="_blank" rel="noreferrer" className="underline font-semibold text-white">platform.deepseek.com</a>.</span>
+                    )}
+                    {provider === "anthropic" && (
+                      <span className="text-amber-300">💳 Pay-as-you-go: Requires billing credits on <a href="https://console.anthropic.com" target="_blank" rel="noreferrer" className="underline font-semibold text-white">console.anthropic.com</a>.</span>
                     )}
                   </p>
                 </div>
 
                 {/* System Instructions / Prompt */}
-                <div className="border-t border-white/[0.06] pt-5">
-                  <div className="flex items-center justify-between mb-1.5">
-                    <label className="font-medium text-xs text-slate-300">
+                <div className="border-t border-[var(--border-subtle)] pt-5">
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="text-[13px] font-semibold text-[var(--text-secondary)]">
                       System Instructions &amp; Persona Prompt
                     </label>
-                    <span className="text-[10px] text-slate-500 font-mono">Token optimized</span>
+                    <span className="text-[11px] text-[var(--text-tertiary)] font-mono">Token optimized</span>
                   </div>
                   <textarea
                     rows={3}
                     value={systemPrompt}
                     onChange={(e) => setSystemPrompt(e.target.value)}
-                    className="w-full rounded-xl border border-white/10 bg-[#05070d] p-3.5 text-xs text-white font-mono text-[11px] leading-relaxed focus:border-white/30 focus:outline-none transition-all"
+                    className="w-full rounded-xl border border-[var(--border-default)] bg-[var(--surface-2)] p-4 text-xs text-white font-mono leading-relaxed focus:outline-none transition-all"
                     placeholder="You are a helpful assistant..."
                   />
                 </div>
@@ -1002,14 +1099,14 @@ export default function BotStudioClient({
 
           {/* TAB 4: EMBED & SECURITY (Double-Bezel Architecture) */}
           {activeTab === "embed" && (
-            <div className="p-1.5 rounded-[2rem] bg-white/[0.02] ring-1 ring-white/10 shadow-2xl">
-              <div className="rounded-[calc(2rem-0.375rem)] bg-[#090d18] p-6 space-y-6">
-                <div className="flex items-center justify-between border-b border-white/[0.08] pb-4">
+            <div className="bezel-shell animate-fade-in">
+              <div className="bezel-core p-7 space-y-6">
+                <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-4">
                   <div>
-                    <h2 className="text-sm font-bold text-white tracking-tight">
+                    <h2 className="text-headline text-base text-white">
                       1-Line Embed Script &amp; Domain Whitelist
                     </h2>
-                    <p className="text-xs text-slate-400">
+                    <p className="text-xs text-[var(--text-secondary)] mt-1">
                       Add to any website with 1 line of code. Secure it with domain whitelisting.
                     </p>
                   </div>
@@ -1020,10 +1117,10 @@ export default function BotStudioClient({
 
                 {/* Domain Whitelist */}
                 <div className="space-y-3">
-                  <label className="block font-medium text-xs text-slate-300">
+                  <label className="block text-[13px] font-semibold text-[var(--text-secondary)]">
                     Allowed Embed Domains (Security Whitelist)
                   </label>
-                  <p className="text-[11px] text-slate-400">
+                  <p className="text-[11px] text-[var(--text-tertiary)]">
                     Restrict embedding to your specific domain so external sites cannot use your bot quota.
                   </p>
 
@@ -1031,14 +1128,14 @@ export default function BotStudioClient({
                     {allowedOrigins.map((orig, idx) => (
                       <span
                         key={idx}
-                        className="flex items-center gap-2 rounded-xl border border-white/10 bg-[#05070d] px-3 py-1.5 text-xs font-mono text-slate-200 shadow-sm"
+                        className="flex items-center gap-2 rounded-xl border border-[var(--border-default)] bg-[var(--surface-2)] px-3.5 py-1.5 text-xs font-mono text-slate-200 shadow-sm"
                       >
                         <Globe weight="bold" className={`h-3.5 w-3.5 ${currentTheme.text}`} />
                         <span>{orig === "*" ? "All Domains (*)" : orig}</span>
                         <button
                           type="button"
                           onClick={() => handleRemoveOrigin(orig)}
-                          className="text-slate-500 hover:text-rose-400"
+                          className="text-[var(--text-tertiary)] hover:text-rose-400"
                         >
                           ×
                         </button>
@@ -1052,12 +1149,12 @@ export default function BotStudioClient({
                       value={newOrigin}
                       onChange={(e) => setNewOrigin(e.target.value)}
                       placeholder="https://myportfolio.dev or http://localhost:3000"
-                      className="flex-1 rounded-xl border border-white/10 bg-[#05070d] px-3.5 py-2 text-xs text-white focus:border-white/30 focus:outline-none transition-all"
+                      className="flex-1 rounded-xl border border-[var(--border-default)] bg-[var(--surface-2)] px-4 py-2.5 text-xs text-white placeholder-[var(--text-muted)] focus:outline-none transition-all"
                     />
                     <button
                       type="button"
                       onClick={handleAddOrigin}
-                      className="rounded-xl bg-white/[0.08] px-4 py-2 text-xs font-bold text-white hover:bg-white/[0.14] transition-all shadow-sm"
+                      className="rounded-xl bg-white/[0.08] px-4 py-2.5 text-xs font-bold text-white hover:bg-white/[0.14] transition-all shadow-sm active:scale-[0.97]"
                     >
                       Add Domain
                     </button>
@@ -1065,9 +1162,9 @@ export default function BotStudioClient({
                 </div>
 
                 {/* Embed Code Snippet */}
-                <div className="border-t border-white/[0.06] pt-5 space-y-3">
+                <div className="border-t border-[var(--border-subtle)] pt-5 space-y-3">
                   <div className="flex items-center justify-between">
-                    <label className="font-medium text-xs text-slate-300">
+                    <label className="text-[13px] font-semibold text-[var(--text-secondary)]">
                       Your 1-Line Script Tag
                     </label>
                     <button
@@ -1077,14 +1174,14 @@ export default function BotStudioClient({
                         setCopiedEmbed(true);
                         setTimeout(() => setCopiedEmbed(false), 1500);
                       }}
-                      className={`flex items-center gap-1 text-xs font-mono font-semibold ${currentTheme.text} hover:opacity-80 transition-opacity`}
+                      className={`flex items-center gap-1.5 text-xs font-mono font-semibold ${currentTheme.text} hover:opacity-80 transition-opacity`}
                     >
                       {copiedEmbed ? <CheckCircle weight="bold" className="h-3.5 w-3.5" /> : <Copy weight="bold" className="h-3.5 w-3.5" />}
                       <span>{copiedEmbed ? "Copied!" : "Copy Code"}</span>
                     </button>
                   </div>
 
-                  <div className="rounded-2xl border border-white/10 bg-[#05070d] p-4 font-mono text-xs text-slate-300 overflow-x-auto leading-relaxed shadow-inner">
+                  <div className="rounded-2xl border border-[var(--border-default)] bg-[var(--surface-2)] p-4 font-mono text-xs text-slate-300 overflow-x-auto leading-relaxed shadow-inner">
                     <pre>
                       <code>{getEmbedSnippet()}</code>
                     </pre>
@@ -1095,7 +1192,7 @@ export default function BotStudioClient({
                     <Link
                       href={`/test-embed?botId=${bot.id}`}
                       target="_blank"
-                      className={`inline-flex items-center gap-2 rounded-xl bg-white/[0.04] border border-white/10 px-4 py-2.5 text-xs font-bold text-white hover:bg-white/[0.08] hover:${currentTheme.border} transition-all shadow-sm`}
+                      className={`inline-flex items-center gap-2 rounded-xl bg-white/[0.04] border border-[var(--border-default)] px-4 py-2.5 text-xs font-bold text-white hover:bg-white/[0.08] hover:${currentTheme.border} transition-all shadow-sm active:scale-[0.97]`}
                     >
                       <Sparkle weight="fill" className={`h-4 w-4 ${currentTheme.text}`} />
                       <span>Open Live Embed Playground &rarr;</span>
@@ -1108,9 +1205,9 @@ export default function BotStudioClient({
         </div>
 
         {/* ================= RIGHT LIVE SIMULATOR (5 COLS) ================= */}
-        <div className="lg:col-span-5 flex flex-col space-y-3">
+        <div className="lg:col-span-5 flex flex-col space-y-3 animate-fade-in-up stagger-1">
           <div className="flex items-center justify-between px-1">
-            <span className="text-xs font-bold uppercase tracking-wider font-mono text-slate-400 flex items-center gap-1.5">
+            <span className="text-label text-[var(--text-tertiary)] font-mono flex items-center gap-1.5">
               <Sparkle weight="fill" className={`h-3.5 w-3.5 ${currentTheme.text}`} />
               Live Interactive Simulator
             </span>
@@ -1118,7 +1215,7 @@ export default function BotStudioClient({
               onClick={() => {
                 setSimMessages([{ role: "assistant", content: welcomeMessage }]);
               }}
-              className="text-[11px] text-slate-500 hover:text-slate-300 transition-colors flex items-center gap-1"
+              className="text-[11px] text-[var(--text-tertiary)] hover:text-white transition-colors flex items-center gap-1"
             >
               <ArrowClockwise weight="bold" className="h-3 w-3" />
               <span>Reset Chat</span>
@@ -1126,13 +1223,13 @@ export default function BotStudioClient({
           </div>
 
           {/* Double-Bezel Mockup Container */}
-          <div className="p-1.5 rounded-[2rem] bg-white/[0.02] ring-1 ring-white/10 shadow-2xl flex-1 flex flex-col min-h-[580px]">
-            <div className="flex-1 rounded-[calc(2rem-0.375rem)] bg-[#090d18] flex flex-col overflow-hidden border border-white/[0.06]">
+          <div className="bezel-shell flex-1 flex flex-col min-h-[580px]">
+            <div className="bezel-core flex-1 flex flex-col overflow-hidden border border-[var(--border-subtle)]">
               {/* Widget Header */}
-              <div className="border-b border-white/[0.08] bg-[#070a12]/80 p-4 flex items-center justify-between backdrop-blur-md">
+              <div className="border-b border-[var(--border-subtle)] bg-[var(--surface-0)]/90 p-4 flex items-center justify-between backdrop-blur-md">
                 <div className="flex items-center gap-3 truncate">
                   <div className="relative shrink-0">
-                    <div className="h-9 w-9 rounded-2xl border border-white/15 bg-white/5 flex items-center justify-center overflow-hidden shadow-inner">
+                    <div className="h-9 w-9 rounded-2xl border border-[var(--border-default)] bg-white/5 flex items-center justify-center overflow-hidden shadow-inner">
                       {avatarUrl ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
@@ -1142,12 +1239,12 @@ export default function BotStudioClient({
                         </span>
                       )}
                     </div>
-                    <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-emerald-400 ring-2 ring-[#070a12]" />
+                    <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-emerald-400 ring-2 ring-[var(--surface-0)]" />
                   </div>
 
                   <div className="truncate">
                     <h4 className="font-bold text-xs text-white truncate">{name}</h4>
-                    <p className="text-[10px] text-slate-400 font-mono flex items-center gap-1">
+                    <p className="text-[10px] text-[var(--text-tertiary)] font-mono flex items-center gap-1">
                       <Lightning weight="fill" className={`h-2.5 w-2.5 ${currentTheme.text}`} />
                       <span>{provider.toUpperCase()} • BYOK</span>
                     </p>
@@ -1165,7 +1262,7 @@ export default function BotStudioClient({
                     className={`flex items-start gap-2.5 ${msg.role === "user" ? "justify-end" : "justify-start"}`}
                   >
                     {msg.role === "assistant" && (
-                      <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/[0.03] text-[10px] mt-0.5 shadow-sm">
+                      <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-[var(--border-default)] bg-white/[0.03] text-[10px] mt-0.5 shadow-sm">
                         {avatarUrl ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img src={avatarUrl} alt="" className="h-full w-full object-cover rounded-lg" />
@@ -1182,7 +1279,7 @@ export default function BotStudioClient({
                         className={`rounded-2xl px-3.5 py-2.5 leading-relaxed whitespace-pre-wrap ${
                           msg.role === "user"
                             ? `${currentTheme.bg} text-slate-950 font-medium shadow-md`
-                            : "bg-[#0c101c] border border-white/[0.08] text-slate-200 shadow-sm"
+                            : "bg-[var(--surface-2)] border border-[var(--border-subtle)] text-slate-200 shadow-sm"
                         }`}
                       >
                         {msg.content}
@@ -1194,9 +1291,9 @@ export default function BotStudioClient({
                           type="button"
                           onClick={() => handleCopyMessage(msg.content, i)}
                           title="Copy text"
-                          className="opacity-0 group-hover:opacity-100 absolute -bottom-4 right-1 rounded bg-[#090d18] border border-white/10 p-1 text-[9px] text-slate-400 hover:text-white transition-opacity shadow-sm"
+                          className="opacity-0 group-hover:opacity-100 absolute -bottom-4 right-1 rounded bg-[var(--surface-1)] border border-[var(--border-default)] p-1 text-[9px] text-[var(--text-tertiary)] hover:text-white transition-opacity shadow-sm"
                         >
-                          {copiedSimIdx === i ? <CheckCircle weight="bold" className="h-3 w-3 text-emerald-400" /> : <Copy weight="bold" className="h-3 w-3" />}
+                          {copiedSimIdx === i ? <Check weight="bold" className="h-3 w-3 text-emerald-400" /> : <Copy weight="bold" className="h-3 w-3" />}
                         </button>
                       )}
                     </div>
@@ -1210,11 +1307,11 @@ export default function BotStudioClient({
                 ))}
 
                 {simTyping && (
-                  <div className="flex items-center gap-2 text-slate-400">
-                    <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/[0.03] text-[10px]">
+                  <div className="flex items-center gap-2 text-[var(--text-tertiary)]">
+                    <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-[var(--border-default)] bg-white/[0.03] text-[10px]">
                       <Sparkle weight="fill" className={`h-3 w-3 ${currentTheme.text} animate-spin`} />
                     </div>
-                    <div className="rounded-2xl bg-[#0c101c] border border-white/[0.08] px-3 py-2 text-[10px] text-slate-400 flex items-center gap-1.5 shadow-sm">
+                    <div className="rounded-2xl bg-[var(--surface-2)] border border-[var(--border-subtle)] px-3 py-2 text-[10px] text-[var(--text-tertiary)] flex items-center gap-1.5 shadow-sm">
                       <span className="h-1.5 w-1.5 rounded-full bg-slate-400 animate-bounce" />
                       <span className="h-1.5 w-1.5 rounded-full bg-slate-400 animate-bounce [animation-delay:0.2s]" />
                       <span className="h-1.5 w-1.5 rounded-full bg-slate-400 animate-bounce [animation-delay:0.4s]" />
@@ -1225,13 +1322,13 @@ export default function BotStudioClient({
 
               {/* Quick Starter Question Pills in Simulator */}
               {sampleQuestions.length > 0 && (
-                <div className="px-4 pb-2.5 flex flex-wrap gap-1.5 border-t border-white/[0.04] pt-2.5 bg-[#080b15]">
+                <div className="px-4 pb-2.5 flex flex-wrap gap-1.5 border-t border-[var(--border-subtle)] pt-2.5 bg-[var(--surface-1)]">
                   {sampleQuestions.map((q, idx) => (
                     <button
                       key={idx}
                       type="button"
                       onClick={() => handleSimSend(q)}
-                      className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-[10px] text-slate-300 hover:border-white/30 hover:text-white transition-all truncate max-w-full shadow-sm"
+                      className="rounded-full border border-[var(--border-default)] bg-white/[0.03] px-3 py-1 text-[10px] text-[var(--text-secondary)] hover:border-[var(--border-hover)] hover:text-white transition-all truncate max-w-full shadow-sm active:scale-[0.97]"
                     >
                       {q}
                     </button>
@@ -1240,7 +1337,7 @@ export default function BotStudioClient({
               )}
 
               {/* Simulator Input Box */}
-              <div className="border-t border-white/[0.08] bg-[#070a12] p-3.5 flex items-center gap-2">
+              <div className="border-t border-[var(--border-subtle)] bg-[var(--surface-0)] p-3.5 flex items-center gap-2">
                 <input
                   type="text"
                   value={simInput}
@@ -1249,13 +1346,13 @@ export default function BotStudioClient({
                     if (e.key === "Enter") handleSimSend();
                   }}
                   placeholder="Ask a question..."
-                  className="flex-1 rounded-xl border border-white/10 bg-[#05070d] px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:border-white/30 focus:outline-none transition-all"
+                  className="flex-1 rounded-xl border border-[var(--border-default)] bg-[var(--surface-2)] px-3.5 py-2.5 text-xs text-white placeholder-[var(--text-muted)] focus:outline-none transition-all"
                 />
                 <button
                   type="button"
                   onClick={() => handleSimSend()}
                   disabled={!simInput.trim() || simTyping}
-                  className={`rounded-xl ${currentTheme.bg} p-2.5 text-slate-950 hover:opacity-90 transition-all active:scale-95 disabled:opacity-40 shadow-md`}
+                  className={`rounded-xl ${currentTheme.bg} p-2.5 text-slate-950 hover:opacity-95 transition-all active:scale-95 disabled:opacity-40 shadow-md`}
                 >
                   <PaperPlaneRight weight="bold" className="h-4 w-4" />
                 </button>

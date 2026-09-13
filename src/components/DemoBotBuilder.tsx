@@ -280,46 +280,61 @@ export default function DemoBotBuilder({ onTestInWidget }: DemoBotBuilderProps) 
                   {[
                     {
                       id: "openrouter",
-                      name: "OpenRouter (Recommended)",
+                      name: "OpenRouter",
                       desc: "1 key for 100+ AI models &bull; Free tiers (Laguna, Llama 3.3)",
-                      badge: "Priority #1",
+                      isFree: true,
+                      badge: "100% Free Tier",
+                    },
+                    {
+                      id: "gemini",
+                      name: "Google Gemini",
+                      desc: "Gemini 1.5 Flash &bull; Free 15 req/min tier",
+                      isFree: true,
+                      badge: "100% Free Tier",
                     },
                     {
                       id: "groq",
-                      name: "Groq LLaMA 3.1 Instant",
-                      desc: "Ultra-fast ~700 tokens/sec &bull; 100% Free tier",
-                      badge: "Fast",
+                      name: "Groq LLaMA 3.1",
+                      desc: "Ultra-fast ~700 tokens/sec &bull; Free tier",
+                      isFree: true,
+                      badge: "Free Tier",
+                    },
+                    {
+                      id: "openai",
+                      name: "OpenAI GPT-4o-mini",
+                      desc: "Direct OpenAI API &bull; ~$0.0001 per response",
+                      isFree: false,
+                      badge: "Pay-As-You-Go",
                     },
                     {
                       id: "xai",
                       name: "xAI Grok (console.x.ai)",
                       desc: "Direct access to grok-beta &bull; Elon Musk's xAI",
-                      badge: "Grok",
-                    },
-                    {
-                      id: "openai",
-                      name: "OpenAI GPT-4o-mini",
-                      desc: "Pennies per month (~$0.0001 per response)",
-                      badge: "GPT-4o",
+                      isFree: false,
+                      badge: "Prepaid Credits",
                     },
                   ].map((prov) => (
                     <button
                       key={prov.id}
                       onClick={() => setSelectedProvider(prov.id)}
-                      className={`flex w-full items-center justify-between rounded-2xl border p-3.5 text-left transition-all ${
+                      className={`flex w-full items-center justify-between rounded-2xl border p-3 text-left transition-all ${
                         selectedProvider === prov.id
                           ? "border-emerald-500/50 bg-emerald-500/10 text-white shadow-md ring-1 ring-emerald-500/30"
                           : "border-white/10 bg-[#05070d] text-slate-400 hover:border-white/20 hover:text-slate-200"
                       }`}
                     >
                       <div className="truncate pr-2">
-                        <div className="text-xs font-bold text-white flex items-center gap-1.5">
+                        <div className="text-xs font-bold text-white flex items-center gap-2">
                           <span>{prov.name}</span>
-                          {prov.id === "openrouter" && (
-                            <span className="rounded bg-emerald-500/20 px-1.5 py-0.2 text-[9px] font-mono text-emerald-300 border border-emerald-500/30">
-                              Easiest
-                            </span>
-                          )}
+                          <span
+                            className={`rounded-full px-2 py-0.5 text-[8.5px] font-mono font-bold tracking-wider ${
+                              prov.isFree
+                                ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
+                                : "bg-amber-500/10 text-amber-300 border border-amber-500/20"
+                            }`}
+                          >
+                            {prov.badge}
+                          </span>
                         </div>
                         <div className="text-[10px] text-slate-400 mt-0.5 truncate">{prov.desc}</div>
                       </div>
